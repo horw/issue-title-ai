@@ -1,0 +1,29 @@
+name: 'Issue Title AI'
+description: 'Improves GitHub issue titles to make them more catchy and helpful using LLM'
+author: 'Igor Udot <horw7001@gmail.com>'
+branding:
+  icon: 'edit-3'
+  color: 'blue'
+
+inputs:
+  github-token:
+    description: 'GitHub token to access the repository issues'
+    required: true
+  gemini-api-key:
+    description: 'Google Gemini API key for LLM integration'
+    required: true
+  model:
+    description: 'Gemini model to use'
+    required: false
+  days-to-scan:
+    description: 'Number of days to look back for issues'
+    required: false
+    default: '7'
+  auto-update:
+    description: 'Automatically update issue titles without confirmation'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

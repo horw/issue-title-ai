@@ -1,0 +1,26 @@
+name: Improve Issue Titles Example
+
+on:
+  # Run daily at midnight
+  # schedule:
+  # - cron: '0 0 * * *'
+  # Allow manual trigger
+  workflow_dispatch:
+  # Run when issues are created
+  issues:
+    types: [opened]
+
+jobs:
+  improve-titles:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Improve Issue Titles
+        uses: horw/issue-title-ai@v0.1
+        with:
+          github-token: ${{ github.token }}
+          # gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
+          deepseek-api-key: ${{ secrets.DEEPSEEK_API_KEY }}
+          days-to-scan: 7
+          auto-update: false
