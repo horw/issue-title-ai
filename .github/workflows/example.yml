@@ -17,7 +17,7 @@ jobs:
       issues: write
     steps:
       - name: Improve Issue Titles
-        uses: horw/issue-title-ai@v0.1
+        uses: horw/issue-title-ai@v0.1.0b
         with:
           github-token: ${{ github.token }}
           # gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
