@@ -1,8 +1,9 @@
 # IssueTitleAI
 
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![AI-Powered](https://img.shields.io/badge/AI--Powered-yes-green)
+![Coverage](https://raw.githubusercontent.com/horw/issue-title-ai/main/.github/badges/coverage.svg)
 
 A GitHub Action that uses AI to automatically improve issue titles, making them more descriptive, actionable, and discoverable.
 
@@ -75,17 +76,19 @@ jobs:
 
 ## ⚙️ Configuration Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `github-token` | GitHub token for authentication | Required |
-| `openai-api-key` | OpenAI API key (if using OpenAI) | Optional |
-| `gemini-api-key` | Gemini API key (if using Gemini) | Optional |
-| `deepseek-api-key` | Deepseek API key (if using Deepseek) | Optional |
-| `days-to-scan` | Number of days to look back for issues | `7` |
-| `auto-update` | Automatically update titles if `true`, otherwise just suggest | `false` |
-| `max-issues` | Maximum number of issues to process per run | `100` |
-| `ai-provider` | AI provider to use: 'openai', 'gemini', or 'deepseek' | Auto-detected based on provided keys |
-| `model` | AI model to use | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
+| Option             | Description                                                   | Default                                                                         |
+|--------------------|---------------------------------------------------------------|---------------------------------------------------------------------------------|
+| `github-token`     | GitHub token for authentication                               | Required                                                                        |
+| `openai-api-key`   | OpenAI API key (if using OpenAI)                              | Optional                                                                        |
+| `gemini-api-key`   | Gemini API key (if using Gemini)                              | Optional                                                                        |
+| `deepseek-api-key` | Deepseek API key (if using Deepseek)                          | Optional                                                                        |
+| `days-to-scan`     | Number of days to look back for issues                        | `7`                                                                             |
+| `auto-update`      | Automatically update titles if `true`, otherwise just suggest | `false`                                                                         |
+| `max-issues`       | Maximum number of issues to process per run                   | `100`                                                                           |
+| `ai-provider`      | AI provider to use: 'openai', 'gemini', or 'deepseek'         | Auto-detected based on provided keys                                            |
+| `model`            | AI model to use                                               | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
+| `skip-label`       | Label to mark processed issues                                | `titled`                                                                        |
+| `prompt`           | Custom prompt for the AI model                                | Optional                                                                        |
 
 ## 🏷️ Label Management
 
@@ -94,6 +97,15 @@ IssueTitleAI uses a label system to track processed issues:
 - Issues with the "titled" label are automatically skipped
 - After processing an issue, the "titled" label is added
 - This prevents duplicate processing and allows for easy filtering of processed issues
+
+## 🧪 Testing and Development
+
+The project uses the following development tools:
+
+- **Ruff**: For linting and code formatting
+- **pytest**: For unit tests with coverage reporting
+- **pre-commit**: For automated code quality checks
+- **mypy**: For static type checking
 
 ## 🔄 Running Locally
 
@@ -107,7 +119,7 @@ To run the tool locally for testing or development:
 
 2. Install requirements:
    ```
-   pip install -r requirements.txt
+   pip install -e ".[dev]"
    ```
 
 3. Set environment variables and run the main script:
@@ -128,3 +140,11 @@ To run the tool locally for testing or development:
 ## 👥 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Run the tests: `pytest`
+5. Commit your changes: `git commit -m 'Add my feature'`
+6. Push to the branch: `git push origin feature/my-feature`
+7. Open a Pull Request

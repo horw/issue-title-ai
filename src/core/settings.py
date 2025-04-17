@@ -12,6 +12,13 @@ class Config:
         self.gemini_api_key = os.environ.get("INPUT_GEMINI-API-KEY")
         self.openai_api_key = os.environ.get("INPUT_OPENAI-API-KEY")
         self.deepseek_api_key = os.environ.get("INPUT_DEEPSEEK-API-KEY")
+        self.providers = {
+            "gemini": self.gemini_api_key,
+            "openai": self.openai_api_key,
+            "deepseek": self.deepseek_api_key,
+        }
+        self.explicit_provider = os.environ.get("INPUT_AI-PROVIDER", "").lower()
+
         self.model_name = os.environ.get("INPUT_MODEL")
         self.prompt = os.environ.get(
             "INPUT_PROMPT",
@@ -67,28 +74,21 @@ Do not include any other text or explanations.
 
     def _detect_ai_provider(self):
         explicit = os.environ.get("INPUT_AI-PROVIDER", "").lower()
-        if explicit == "gemini" and self.gemini_api_key:
-            return "gemini"
-        if explicit == "openai" and self.openai_api_key:
-            return "openai"
-        if explicit == "deepseek" and self.deepseek_api_key:
-            return "deepseek"
+        if explicit in self.providers:
+            if not self.providers[explicit]:
+                raise ValueError(f"{self.providers[explicit]} API key not provided")
+            return explicit
 
-        if self.gemini_api_key:
-            return "gemini"
-        if self.deepseek_api_key:
-            return "deepseek"
-        if self.openai_api_key:
-            return "openai"
+        for provider, api_key in self.providers.items():
+            if api_key:
+                return provider
 
-        return "gemini"
+        raise ValueError(
+            "No LLM API key was provided. Please provide one of the following: deepseek, gemini, openai."
+        )
 
     def get_api_key(self):
-        if self.ai_provider == "gemini":
-            return self.gemini_api_key
-        if self.ai_provider == "deepseek":
-            return self.deepseek_api_key
-        return self.openai_api_key
+        return self.providers[self.ai_provider]
 
     def validate(self):
         if not self.github_token:

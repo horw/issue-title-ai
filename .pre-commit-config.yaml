@@ -25,3 +25,12 @@ repos:
       - id: mypy
         additional_dependencies: [types-requests]
         args: [--ignore-missing-imports]
+
+  - repo: local
+    hooks:
+      - id: pip-compile
+        name: compile requirements.txt
+        entry: bash -c 'pip-compile --output-file=requirements.txt pyproject.toml > /dev/null'
+        language: system
+        pass_filenames: false
+        files: requirements.txt|pyproject.toml
