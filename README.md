@@ -74,6 +74,9 @@ jobs:
           model: gemini-2.0-flash
 ```
 
+Or you can check this [example](./.github/workflows/example.yml)
+
+
 ## ⚙️ Configuration Options
 
 | Option             | Description                                                   | Default                                                                         |
@@ -88,7 +91,40 @@ jobs:
 | `ai-provider`      | AI provider to use: 'openai', 'gemini', or 'deepseek'         | Auto-detected based on provided keys                                            |
 | `model`            | AI model to use                                               | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
 | `skip-label`       | Label to mark processed issues                                | `titled`                                                                        |
-| `prompt`           | Custom prompt for the AI model                                | Optional                                                                        |
+| `prompt`           | Custom prompt for the AI model                                | [Optional](#prompt)                                                             |
+
+### Prompt
+If you want to create your own prompt, use {original_title} and {issue_body} to insert the required variables into the text.
+
+Default prompt:
+```
+You are an expert at writing clear, concise, and descriptive GitHub issue titles.
+Please analyze the following issue title and determine if it needs improvement.
+If the title is already clear, specific, and well-formatted, return the original title unchanged.
+Otherwise, improve it to make it more specific, actionable, and easy to understand.
+The improved title should clearly communicate the problem or feature request.
+
+Original Issue Title: "{original_title}"
+
+Issue Description:
+\"\"\"
+{issue_body}
+\"\"\"
+
+Rules for a good issue title:
+1. Be specific and descriptive
+2. Use action verbs when appropriate
+3. Include relevant context (component name, page, feature)
+4. Keep it concise (under 80 characters ideally)
+5. Avoid vague terms like "bug" or "issue" without context
+6. Don't change the meaning or intent of the original issue
+7. If the original title is already good enough, do not change it
+
+Your response should ONLY contain the improved issue title
+or the original title if it's already good.
+Do not include any other text or explanations.
+```
+
 
 ## 🏷️ Label Management
 

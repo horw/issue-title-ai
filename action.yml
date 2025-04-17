@@ -7,22 +7,79 @@ branding:
 
 inputs:
   github-token:
-    description: 'GitHub token to access the repository issues'
+    description: >
+      GitHub token to access the repository issues
     required: true
+
   gemini-api-key:
-    description: 'Google Gemini API key for LLM integration'
-    required: true
-  model:
-    description: 'Gemini model to use'
+    description: >
+      Google Gemini API key for LLM integration
     required: false
+  openai-api-key:
+    description: >
+      OpenAI API key for LLM integration
+    required: false
+  deepseek-api-key:
+    description: >
+      DeepSeek API key for LLM integration
+    required: false
+  model:
+    description: >
+      LLM model to use
+    required: false
+  ai-provider:
+    description: >
+      By default, the LLM provider is chosen based on the provided API key.
+      However, if there are multiple keys, it is not guaranteed which provider will be selected.
+      In this case, you should explicitly specify one of the following: gemini, openai, or deepseek.
+    required: false
+
   days-to-scan:
-    description: 'Number of days to look back for issues'
+    description: >
+      Number of days to look back for issues
     required: false
     default: '7'
   auto-update:
-    description: 'Automatically update issue titles without confirmation'
+    description: >
+      Automatically update issue titles without confirmation
     required: false
     default: 'false'
+  skip-label:
+    description: >
+      Label to mark processed issues
+    required: false
+  prompt:
+    description: >
+      Custom prompt for the AI model.
+
+      default:
+      You are an expert at writing clear, concise, and descriptive GitHub issue titles.
+      Please analyze the following issue title and determine if it needs improvement.
+      If the title is already clear, specific, and well-formatted, return the original title unchanged.
+      Otherwise, improve it to make it more specific, actionable, and easy to understand.
+      The improved title should clearly communicate the problem or feature request.
+
+      Original Issue Title: "{original_title}"
+
+      Issue Description:
+      \"\"\"
+      {issue_body}
+      \"\"\"
+
+      Rules for a good issue title:
+      1. Be specific and descriptive
+      2. Use action verbs when appropriate
+      3. Include relevant context (component name, page, feature)
+      4. Keep it concise (under 80 characters ideally)
+      5. Avoid vague terms like "bug" or "issue" without context
+      6. Don't change the meaning or intent of the original issue
+      7. If the original title is already good enough, do not change it
+
+      Your response should ONLY contain the improved issue title
+      or the original title if it's already good.
+      Do not include any other text or explanations.
+
+    required: false
 
 runs:
   using: 'docker'
