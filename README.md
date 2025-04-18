@@ -1,9 +1,9 @@
 # IssueTitleAI
 
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+
 ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![AI-Powered](https://img.shields.io/badge/AI--Powered-yes-green)
-![Coverage](https://raw.githubusercontent.com/horw/issue-title-ai/main/.github/badges/coverage.svg)
 
 A GitHub Action that uses AI to automatically improve issue titles, making them more descriptive, actionable, and discoverable.
 

@@ -17,10 +17,36 @@ jobs:
       issues: write
     steps:
       - name: Improve Issue Titles
-        uses: horw/issue-title-ai@v0.1.0b
+        uses: horw/issue-title-ai@v0.1.1b
         with:
           github-token: ${{ github.token }}
           # gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
           deepseek-api-key: ${{ secrets.DEEPSEEK_API_KEY }}
-          days-to-scan: 7
+          days-to-scan: 3
           auto-update: false
+          skip-label: ai-title
+          prompt: |
+            You are a GitHub Actions plugin designed to automatically improve GitHub issue titles using a large language model (LLM). You're also an expert in crafting precise, helpful, and engaging issue titles.
+
+            Your job is to analyze the provided GitHub issue and determine if the title is already effective. If it's vague or unhelpful, you should rewrite it to be:
+
+            - Clear, concise, and specific
+            - Action-oriented when relevant
+            - Focused on the affected feature, component, or behavior
+            - Ideally under 80 characters
+            - Free from generic terms like "bug" or "problem" without context
+
+            You must **not** change the intent or meaning of the issue.
+
+            ### Input:
+            - **Original Issue Title**: `{original_title}`
+            - **Issue Description**:
+              ```
+              {issue_body}
+              ```
+
+            ### Output:
+            - If the original title is already well-written, return it **unchanged**.
+            - Otherwise, return an improved title **only**—with no extra explanation or commentary.
+
+            Your output should **only be the final title**, nothing else.
