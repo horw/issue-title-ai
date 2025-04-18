@@ -37,19 +37,21 @@ class IssueProcessor:
             if auto_update:
                 self.github_client.update_issue_title(issue, improved_title)
                 comment = (
-                    f"🤖 I've improved the title of this issue "
+                    f"🤖 I've improved[^1] the title of this issue "
                     f"for better clarity and discoverability.\n\n"
                     f"**Previous title:** {original_title}\n"
                     f"**New title:** {improved_title}"
+                    "[^1]: Improved by [issue-title-ai](https://github.com/horw/issue-title-ai)"
                 )
                 self.github_client.add_issue_comment(issue, comment)
                 print(f'Updated issue #{issue_number} title to: "{improved_title}"')
             else:
                 comment = (
-                    f"🤖 I've analyzed this issue title "
+                    f"🤖 I've analyzed[^1] this issue title "
                     f"and have a suggestion for improvement:\n\n"
                     f"**Current title:** {original_title}\n"
                     f"**Suggested title:** {improved_title}\n\n"
+                    "[^1]: Suggested by [issue-title-ai](https://github.com/horw/issue-title-ai)"
                 )
                 self.github_client.add_issue_comment(issue, comment)
                 print(f"Added title suggestion to issue #{issue_number}")
