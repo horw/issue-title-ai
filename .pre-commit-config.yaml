@@ -1,0 +1,36 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-json
+      - id: check-toml
+      - id: debug-statements
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.5
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-requests]
+        args: [--ignore-missing-imports]
+
+  - repo: local
+    hooks:
+      - id: pip-compile
+        name: compile requirements.txt
+        entry: bash -c 'pip-compile --output-file=requirements.txt pyproject.toml > /dev/null'
+        language: system
+        pass_filenames: false
+        files: requirements.txt|pyproject.toml

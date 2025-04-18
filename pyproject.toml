@@ -1,0 +1,110 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "B",  # flake8-bugbear
+    "I",  # isort
+    "C4", # flake8-comprehensions
+    "N",  # pep8-naming
+    "UP", # pyupgrade
+    "D",  # pydocstyle
+    "S",  # flake8-bandit (security)
+    "A",  # flake8-builtins
+    "C",  # flake8-comprehensions (all, not just C4)
+    "T",  # flake8-print
+    "RUF", # Ruff-specific rules
+]
+ignore = [
+    "B905",  # zip strict=True; remove once python <3.10 support is dropped.
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D200",
+    "D401",
+    "T201",
+    "E402",
+    "E501",
+    "F401",
+    "TRY003",  # Avoid specifying messages outside exception class; overly strict, especially for ValueError
+]
+
+exclude = [
+    ".git",
+    ".github",
+    ".ruff_cache",
+    "__pycache__",
+    "venv",
+    ".venv",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/**/*.py" = ["S101"]  # Allow use of assert in test files
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"  # Use Google docstring style
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.pytest]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*", "**/__init__.py"]
+branch = true
+relative_files = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
+]
+fail_under = 80
+show_missing = true
+
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report=term-missing --cov-report=html:htmlcov --disable-socket"
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "issue-title-ai"
+version = "0.1.0"
+description = "GitHub issue title improvement tool"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "PyGithub==1.58.2",
+    "google-generativeai==0.3.1",
+    "openai>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff==0.11.5",
+    "pre-commit==4.2.0",
+    "mypy==1.15.0",
+    "pytest==8.3.5",
+    "pytest-cov==6.1.1",
+    "pytest-socket==0.7.0",
+    "pip-tools==7.4.1"
+]
