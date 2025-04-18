@@ -40,7 +40,7 @@ class IssueProcessor:
                     f"🤖 I've improved[^1] the title of this issue "
                     f"for better clarity and discoverability.\n\n"
                     f"**Previous title:** {original_title}\n"
-                    f"**New title:** {improved_title}"
+                    f"**New title:** {improved_title}\n\n"
                     "[^1]: Improved by [issue-title-ai](https://github.com/horw/issue-title-ai)"
                 )
                 self.github_client.add_issue_comment(issue, comment)
