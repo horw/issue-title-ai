@@ -42,6 +42,18 @@ inputs:
       - Token usage statistics
       Useful for debugging or understanding model behavior.
     default: 'false'
+  max-issues:
+    description: >
+      Maximum number of issues that will be retrieved from GitHub.
+      This setting does not apply when triggered by an open issue..
+    default: '100'
+  strip-characters:
+    description: >
+      The best practice is to specify the prompt correctly. However, sometimes the model may return responses
+      enclosed in unwanted characters, such as quotes (""). This option allows you to define which characters
+      should be stripped from the beginning and end of the response. The specified characters will be removed
+      using Python's `strip()` function.
+      Example: Using `'"` will remove the characters `"`, `'` from both ends of the response.
   days-to-scan:
     description: >
       Number of days to look back for issues

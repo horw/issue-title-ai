@@ -23,7 +23,7 @@ class GeminiAIClient(AIClient):
 
     def generate_content(self, prompt):
         try:
-            verbose_print(prompt)
+            verbose_print("Model Input: ", prompt)
             response = self.model.generate_content(prompt)
             return response.text.strip()
         except Exception as e:
@@ -49,12 +49,12 @@ class OpenAIClient(AIClient):
                 },
                 {"role": "user", "content": prompt},
             ]
-            verbose_print(self.model_name, messages)
+            verbose_print("Model Input: ", self.model_name, messages)
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
             )
-            verbose_print("Model Usage", response.usage)
+            verbose_print("Model Usage: ", response.usage)
             return response.choices[0].message.content.strip()
         except Exception as e:
             print(f"Error generating content with OpenAI: {e!s}")
@@ -79,7 +79,7 @@ class DeepseekAIClient(AIClient):
                 },
                 {"role": "user", "content": prompt},
             ]
-            verbose_print(self.model_name, messages)
+            verbose_print("Model Input: ", self.model_name, messages)
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,

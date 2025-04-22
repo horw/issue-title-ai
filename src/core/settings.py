@@ -20,6 +20,7 @@ class Config:
         self.explicit_provider = os.environ.get("INPUT_AI-PROVIDER", "").lower()
 
         self.verbose = os.environ.get("INPUT_VERBOSE", "false").lower() == "true"
+        self.strip_characters = os.environ.get("INPUT_STRIP-CHARACTERS")
         self.model_name = os.environ.get("INPUT_MODEL")
         self.prompt = os.environ.get(
             "INPUT_PROMPT",

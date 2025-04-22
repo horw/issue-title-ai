@@ -38,7 +38,9 @@ def scan_issue_event(config, repo_obj, ai_client, github_client):
     results = []
     for i, issue in enumerate(recent_issues, 1):
         print(f"[{i}/{len(recent_issues)}] Processing issue #{issue.number}")
-        result = issue_processor.process_issue(issue=issue, auto_update=config.auto_update)
+        result = issue_processor.process_issue(
+            issue=issue, auto_update=config.auto_update, strip_characters=config.strip_characters
+        )
         results.append(result)
 
     improved_count = len([r for r in results if r.get("improved_title")])

@@ -8,7 +8,7 @@ class IssueProcessor:
         self.prompt = prompt
         self.skip_label = skip_label
 
-    def process_issue(self, issue, auto_update=False):
+    def process_issue(self, issue, auto_update=False, strip_characters=""):
         issue_number = issue.number
         original_title = issue.title
         issue_body = issue.body or ""
@@ -28,7 +28,8 @@ class IssueProcessor:
 
         try:
             improved_title = self.generate_improved_title(original_title, issue_body)
-            verbose_print("model response:", improved_title)
+            verbose_print("Model Response: ", improved_title)
+            improved_title = improved_title.strip().strip(strip_characters)
             if improved_title == original_title or not improved_title:
                 print(f"Title already optimal for issue #{issue_number}")
                 return {
