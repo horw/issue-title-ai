@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Improve Issue Titles
-        uses: horw/issue-title-ai@v0.1
+        uses: horw/issue-title-ai@v0.1.2b
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Choose one of these API keys based on your preference
@@ -79,19 +79,22 @@ Or you can check this [example](./.github/workflows/example.yml)
 
 ## ⚙️ Configuration Options
 
-| Option             | Description                                                   | Default                                                                         |
-|--------------------|---------------------------------------------------------------|---------------------------------------------------------------------------------|
-| `github-token`     | GitHub token for authentication                               | Required                                                                        |
-| `openai-api-key`   | OpenAI API key (if using OpenAI)                              | Optional                                                                        |
-| `gemini-api-key`   | Gemini API key (if using Gemini)                              | Optional                                                                        |
-| `deepseek-api-key` | Deepseek API key (if using Deepseek)                          | Optional                                                                        |
-| `days-to-scan`     | Number of days to look back for issues                        | `7`                                                                             |
-| `auto-update`      | Automatically update titles if `true`, otherwise just suggest | `false`                                                                         |
-| `max-issues`       | Maximum number of issues to process per run                   | `100`                                                                           |
-| `ai-provider`      | AI provider to use: 'openai', 'gemini', or 'deepseek'         | Auto-detected based on provided keys                                            |
-| `model`            | AI model to use                                               | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
-| `skip-label`       | Label to mark processed issues                                | `titled`                                                                        |
-| `prompt`           | Custom prompt for the AI model                                | [Optional](#prompt)                                                             |
+| Option              | Description                                                                                   | Default                                                                         |
+|---------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
+| `github-token`      | GitHub token for authentication                                                               | Required                                                                        |
+| `openai-api-key`    | OpenAI API key (if using OpenAI)                                                              | Optional                                                                        |
+| `gemini-api-key`    | Gemini API key (if using Gemini)                                                              | Optional                                                                        |
+| `deepseek-api-key`  | Deepseek API key (if using Deepseek)                                                          | Optional                                                                        |
+| `days-to-scan`      | Number of days to look back for issues                                                        | `7`                                                                             |
+| `auto-update`       | Automatically update titles if `true`, otherwise just suggest                                 | `false`                                                                         |
+| `max-issues`        | Maximum number of issues to process per run                                                   | `100`                                                                           |
+| `ai-provider`       | AI provider to use: 'openai', 'gemini', or 'deepseek'                                         | Auto-detected based on provided keys                                            |
+| `model`             | AI model to use                                                                               | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
+| `skip-label`        | Label to mark processed issues                                                                | `titled`                                                                        |
+| `prompt`            | Custom prompt for the AI model                                                                | [Optional](#prompt)                                                             |
+| `verbose`           | When enabled, prints detailed information, including input, response, and token usage         | false                                                                           |
+| `strip-characters`  | Allows removing unwanted characters (e.g., quotes) from the beginning and end of the response | ""
+
 
 ### Prompt
 If you want to create your own prompt, use {original_title} and {issue_body} to insert the required variables into the text.
