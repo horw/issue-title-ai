@@ -8,7 +8,7 @@ class IssueProcessor:
         self.prompt = prompt
         self.skip_label = skip_label
 
-    def process_issue(self, issue, auto_update=False, strip_characters=""):
+    def process_issue(self, issue, auto_update=False, strip_characters="", quiet=False):
         issue_number = issue.number
         original_title = issue.title
         issue_body = issue.body or ""
@@ -41,15 +41,16 @@ class IssueProcessor:
 
             if auto_update:
                 self.github_client.update_issue_title(issue, improved_title)
-                comment = (
-                    f"🤖 I've improved[^1] the title of this issue "
-                    f"for better clarity and discoverability.\n\n"
-                    f"**Previous title:** {original_title}\n"
-                    f"**New title:** {improved_title}\n\n"
-                    "[^1]: Improved by [issue-title-ai](https://github.com/horw/issue-title-ai)"
-                )
-                self.github_client.add_issue_comment(issue, comment)
-                print(f'Updated issue #{issue_number} title to: "{improved_title}"')
+                if not quiet:
+                    comment = (
+                        f"🤖 I've improved[^1] the title of this issue "
+                        f"for better clarity and discoverability.\n\n"
+                        f"**Previous title:** {original_title}\n"
+                        f"**New title:** {improved_title}\n\n"
+                        "[^1]: Improved by [issue-title-ai](https://github.com/horw/issue-title-ai)"
+                    )
+                    self.github_client.add_issue_comment(issue, comment)
+                    print(f'Updated issue #{issue_number} title to: "{improved_title}"')
             else:
                 comment = (
                     f"🤖 I've analyzed[^1] this issue title "

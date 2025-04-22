@@ -14,7 +14,12 @@ def open_issue_event(config, repo_obj, ai_client, github_client):
     try:
         issue = repo_obj.get_issue(config.issue_number)
         issue_processor = IssueProcessor(ai_client, github_client, config.prompt, config.skip_label)
-        result = issue_processor.process_issue(issue=issue, auto_update=config.auto_update)
+        result = issue_processor.process_issue(
+            issue=issue,
+            auto_update=config.auto_update,
+            strip_characters=config.strip_characters,
+            quiet=config.quiet,
+        )
         return [result]
     except Exception as e:
         print(f"Error processing issue #{config.issue_number}: {e!s}")
@@ -39,7 +44,10 @@ def scan_issue_event(config, repo_obj, ai_client, github_client):
     for i, issue in enumerate(recent_issues, 1):
         print(f"[{i}/{len(recent_issues)}] Processing issue #{issue.number}")
         result = issue_processor.process_issue(
-            issue=issue, auto_update=config.auto_update, strip_characters=config.strip_characters
+            issue=issue,
+            auto_update=config.auto_update,
+            strip_characters=config.strip_characters,
+            quiet=config.quiet,
         )
         results.append(result)
 

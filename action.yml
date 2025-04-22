@@ -64,6 +64,12 @@ inputs:
       Automatically update issue titles without confirmation
     required: false
     default: 'false'
+  quiet:
+    description: >
+      By default, auto-update adds a comment to your pull request.
+      You can skip this behavior by setting this parameter to 'true',
+      which will prevent the comment from being added.
+    default: 'false'
   skip-label:
     description: >
       Label to mark processed issues
