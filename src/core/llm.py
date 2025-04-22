@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 import google.generativeai as genai
 import openai
 
+from .verbose import verbose_print
+
 
 class AIClient(ABC):
     @abstractmethod
@@ -21,6 +23,7 @@ class GeminiAIClient(AIClient):
 
     def generate_content(self, prompt):
         try:
+            verbose_print("Model Input: ", prompt)
             response = self.model.generate_content(prompt)
             return response.text.strip()
         except Exception as e:
@@ -39,16 +42,19 @@ class OpenAIClient(AIClient):
 
     def generate_content(self, prompt):
         try:
+            messages = [
+                {
+                    "role": "system",
+                    "content": "You are an expert at improving GitHub issue titles.",
+                },
+                {"role": "user", "content": prompt},
+            ]
+            verbose_print("Model Input: ", self.model_name, messages)
             response = self.client.chat.completions.create(
                 model=self.model_name,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an expert at improving GitHub issue titles.",
-                    },
-                    {"role": "user", "content": prompt},
-                ],
+                messages=messages,
             )
+            verbose_print("Model Usage: ", response.usage)
             return response.choices[0].message.content.strip()
         except Exception as e:
             print(f"Error generating content with OpenAI: {e!s}")
@@ -66,16 +72,19 @@ class DeepseekAIClient(AIClient):
 
     def generate_content(self, prompt):
         try:
+            messages = [
+                {
+                    "role": "system",
+                    "content": "You are an expert at improving GitHub issue titles.",
+                },
+                {"role": "user", "content": prompt},
+            ]
+            verbose_print("Model Input: ", self.model_name, messages)
             response = self.client.chat.completions.create(
                 model=self.model_name,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an expert at improving GitHub issue titles.",
-                    },
-                    {"role": "user", "content": prompt},
-                ],
+                messages=messages,
             )
+            verbose_print("Model Usage", response.usage)
             return response.choices[0].message.content.strip()
         except Exception as e:
             print(f"Error generating content with Deepseek: {e!s}")

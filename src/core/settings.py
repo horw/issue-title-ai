@@ -7,6 +7,7 @@ class Config:
         self.repo_name = os.environ.get("GITHUB_REPOSITORY")
         self.days_to_scan = int(os.environ.get("INPUT_DAYS-TO-SCAN", "7"))
         self.auto_update = os.environ.get("INPUT_AUTO-UPDATE", "false").lower() == "true"
+        self.quiet = os.environ.get("INPUT_QUIET", "false").lower() == "true"
         self.max_issues = int(os.environ.get("INPUT_MAX-ISSUES", "100"))
 
         self.gemini_api_key = os.environ.get("INPUT_GEMINI-API-KEY")
@@ -19,6 +20,8 @@ class Config:
         }
         self.explicit_provider = os.environ.get("INPUT_AI-PROVIDER", "").lower()
 
+        self.verbose = os.environ.get("INPUT_VERBOSE", "false").lower() == "true"
+        self.strip_characters = os.environ.get("INPUT_STRIP-CHARACTERS")
         self.model_name = os.environ.get("INPUT_MODEL")
         self.prompt = os.environ.get(
             "INPUT_PROMPT",

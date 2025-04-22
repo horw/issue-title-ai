@@ -6,6 +6,7 @@ from core.github_client import GitHubClient
 from core.issue_service import IssueProcessor
 from core.llm import create_ai_client
 from core.settings import Config
+from core.verbose import set_verbose
 
 
 def open_issue_event(config, repo_obj, ai_client, github_client):
@@ -13,7 +14,12 @@ def open_issue_event(config, repo_obj, ai_client, github_client):
     try:
         issue = repo_obj.get_issue(config.issue_number)
         issue_processor = IssueProcessor(ai_client, github_client, config.prompt, config.skip_label)
-        result = issue_processor.process_issue(issue=issue, auto_update=config.auto_update)
+        result = issue_processor.process_issue(
+            issue=issue,
+            auto_update=config.auto_update,
+            strip_characters=config.strip_characters,
+            quiet=config.quiet,
+        )
         return [result]
     except Exception as e:
         print(f"Error processing issue #{config.issue_number}: {e!s}")
@@ -37,7 +43,12 @@ def scan_issue_event(config, repo_obj, ai_client, github_client):
     results = []
     for i, issue in enumerate(recent_issues, 1):
         print(f"[{i}/{len(recent_issues)}] Processing issue #{issue.number}")
-        result = issue_processor.process_issue(issue=issue, auto_update=config.auto_update)
+        result = issue_processor.process_issue(
+            issue=issue,
+            auto_update=config.auto_update,
+            strip_characters=config.strip_characters,
+            quiet=config.quiet,
+        )
         results.append(result)
 
     improved_count = len([r for r in results if r.get("improved_title")])
@@ -51,6 +62,7 @@ def run():
         config.validate()
 
         print(f"Using {config.ai_provider} with model: {config.model_name}")
+        set_verbose(config.verbose)
 
         ai_client = create_ai_client(
             provider=config.ai_provider, api_key=config.get_api_key(), model_name=config.model_name
