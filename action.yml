@@ -34,6 +34,14 @@ inputs:
       In this case, you should explicitly specify one of the following: gemini, openai, or deepseek.
     required: false
 
+  verbose:
+    description: >
+      When enabled, prints detailed information including:
+      - The input provided to the model
+      - The model's response
+      - Token usage statistics
+      Useful for debugging or understanding model behavior.
+    default: 'false'
   days-to-scan:
     description: >
       Number of days to look back for issues

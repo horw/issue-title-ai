@@ -6,6 +6,7 @@ from core.github_client import GitHubClient
 from core.issue_service import IssueProcessor
 from core.llm import create_ai_client
 from core.settings import Config
+from core.verbose import set_verbose
 
 
 def open_issue_event(config, repo_obj, ai_client, github_client):
@@ -51,6 +52,7 @@ def run():
         config.validate()
 
         print(f"Using {config.ai_provider} with model: {config.model_name}")
+        set_verbose(config.verbose)
 
         ai_client = create_ai_client(
             provider=config.ai_provider, api_key=config.get_api_key(), model_name=config.model_name

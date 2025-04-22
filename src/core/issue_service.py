@@ -1,3 +1,6 @@
+from .verbose import verbose_print
+
+
 class IssueProcessor:
     def __init__(self, ai_client, github_client, prompt, skip_label):
         self.ai_client = ai_client
@@ -25,6 +28,7 @@ class IssueProcessor:
 
         try:
             improved_title = self.generate_improved_title(original_title, issue_body)
+            verbose_print("model response:", improved_title)
             if improved_title == original_title or not improved_title:
                 print(f"Title already optimal for issue #{issue_number}")
                 return {
