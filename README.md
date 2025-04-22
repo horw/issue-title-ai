@@ -93,7 +93,7 @@ Or you can check this [example](./.github/workflows/example.yml)
 | `skip-label`        | Label to mark processed issues                                                                | `titled`                                                                        |
 | `prompt`            | Custom prompt for the AI model                                                                | [Optional](#prompt)                                                             |
 | `verbose`           | When enabled, prints detailed information, including input, response, and token usage         | false                                                                           |
-| `strip-characters`  | Allows removing unwanted characters (e.g., quotes) from the beginning and end of the response | ""
+| `strip-characters`  | Allows removing unwanted characters (e.g., quotes) from the beginning and end of the response | ""                                                                              |
 
 
 ### Prompt
