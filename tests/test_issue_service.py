@@ -131,3 +131,61 @@ def test_generate_improved_title(processor):
         original_title="Original title", issue_body="Issue body"
     )
     processor.ai_client.generate_content.assert_called_once_with(expected_prompt)
+
+
+def test_quite(processor):
+    mock_issue = Mock()
+    mock_issue.number = 1
+    mock_issue.title = "Original title"
+    mock_issue.body = "Issue body"
+    mock_issue.labels = []
+
+    processor.ai_client.generate_content.return_value = "Improved title"
+
+    result = processor.process_issue(mock_issue, auto_update=True, quiet=True)
+
+    assert result["issue_number"] == 1
+    assert result["original_title"] == "Original title"
+    assert result["improved_title"] == "Improved title"
+    assert result["updated"] is True
+
+    expected_prompt = processor.prompt.format(
+        original_title="Original title", issue_body="Issue body"
+    )
+    processor.ai_client.generate_content.assert_called_once_with(expected_prompt)
+
+    processor.github_client.update_issue_title.assert_called_once_with(mock_issue, "Improved title")
+    processor.github_client.add_issue_comment.assert_not_called()
+    processor.github_client.add_issue_label.assert_called_once_with(
+        mock_issue, processor.skip_label
+    )
+
+
+def test_strip_chars(processor):
+    mock_issue = Mock()
+    mock_issue.number = 1
+    mock_issue.title = "Original title"
+    mock_issue.body = "Issue body"
+    mock_issue.labels = []
+
+    processor.ai_client.generate_content.return_value = "Improved titleHAHAHA"
+
+    result = processor.process_issue(
+        mock_issue, auto_update=True, quiet=True, strip_characters="HA"
+    )
+
+    assert result["issue_number"] == 1
+    assert result["original_title"] == "Original title"
+    assert result["improved_title"] == "Improved title"
+    assert result["updated"] is True
+
+    expected_prompt = processor.prompt.format(
+        original_title="Original title", issue_body="Issue body"
+    )
+    processor.ai_client.generate_content.assert_called_once_with(expected_prompt)
+
+    processor.github_client.update_issue_title.assert_called_once_with(mock_issue, "Improved title")
+    processor.github_client.add_issue_comment.assert_not_called()
+    processor.github_client.add_issue_label.assert_called_once_with(
+        mock_issue, processor.skip_label
+    )

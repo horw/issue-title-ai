@@ -31,6 +31,7 @@ def mock_config():
     config.ai_provider = "gemini"
     config.model_name = "gemini-2.0-flash"
     config.get_api_key.return_value = "fake_key"
+    config.strip_characters = None
     # Use a safer approach for sensitive credentials in tests
     config.github_token = "DUMMY_TOKEN_FOR_TESTING"  # noqa: S105
     config.repo_name = "owner/repo"
