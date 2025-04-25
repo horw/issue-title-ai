@@ -79,55 +79,37 @@ Or you can check this [example](./.github/workflows/example.yml)
 
 ## ⚙️ Configuration Options
 
-| Option             | Description                                                                                                                                                                    | Default                                                                         |
-|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
-| `github-token`     | GitHub token for authentication                                                                                                                                                | Required                                                                        |
-| `openai-api-key`   | OpenAI API key (if using OpenAI)                                                                                                                                               | Optional                                                                        |
-| `gemini-api-key`   | Gemini API key (if using Gemini)                                                                                                                                               | Optional                                                                        |
-| `deepseek-api-key` | Deepseek API key (if using Deepseek)                                                                                                                                           | Optional                                                                        |
-| `days-to-scan`     | Number of days to look back for issues                                                                                                                                         | `7`                                                                             |
-| `auto-update`      | Automatically update titles if `true`, otherwise just suggest                                                                                                                  | `false`                                                                         |
-| `max-issues`       | Maximum number of issues to process per run                                                                                                                                    | `100`                                                                           |
-| `ai-provider`      | AI provider to use: 'openai', 'gemini', or 'deepseek'                                                                                                                          | Auto-detected based on provided keys                                            |
-| `model`            | AI model to use                                                                                                                                                                | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
-| `skip-label`       | Label to mark processed issues                                                                                                                                                 | `titled`                                                                        |
-| `prompt`           | Custom prompt for the AI model                                                                                                                                                 | [Optional](#prompt)                                                             |
-| `verbose`          | When enabled, prints detailed information, including input, response, and token usage                                                                                          | false                                                                           |
-| `strip-characters` | Allows removing unwanted characters (e.g., quotes) from the beginning and end of the response                                                                                  | ""                                                                              |
-| `quiet`            | By default, auto-update adds a comment to your pull request. You can skip this behavior by setting this parameter to 'true', which will prevent the comment from being added.  | `false`                                                                         |
+| Option             | Description                                                                                                                                                                   | Default                                                                         |
+|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
+| `github-token`     | GitHub token for authentication                                                                                                                                               | Required                                                                        |
+| `openai-api-key`   | OpenAI API key (if using OpenAI)                                                                                                                                              | Optional                                                                        |
+| `gemini-api-key`   | Gemini API key (if using Gemini)                                                                                                                                              | Optional                                                                        |
+| `deepseek-api-key` | Deepseek API key (if using Deepseek)                                                                                                                                          | Optional                                                                        |
+| `days-to-scan`     | Number of days to look back for issues                                                                                                                                        | `7`                                                                             |
+| `auto-update`      | Automatically update titles if `true`, otherwise just suggest                                                                                                                 | `false`                                                                         |
+| `max-issues`       | Maximum number of issues to process per run                                                                                                                                   | `100`                                                                           |
+| `ai-provider`      | AI provider to use: 'openai', 'gemini', or 'deepseek'                                                                                                                         | Auto-detected based on provided keys                                            |
+| `model`            | AI model to use                                                                                                                                                               | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
+| `skip-label`       | Label to mark processed issues                                                                                                                                                | `titled`                                                                        |
+| `prompt`           | Custom prompt for the AI model                                                                                                                                                | [Optional](#prompt)                                                             |
+| `style`            | Predefined prompt. To view available prompts, refer to the `style_prompts` folder `https://github.com/horw/issue-title-ai/tree/main/style_prompts`                            | "default"                                                                       |
+| `verbose`          | When enabled, prints detailed information, including input, response, and token usage                                                                                         | false                                                                           |
+| `strip-characters` | Allows removing unwanted characters (e.g., quotes) from the beginning and end of the response                                                                                 | ""                                                                              |
+| `quiet`            | By default, auto-update adds a comment to your pull request. You can skip this behavior by setting this parameter to 'true', which will prevent the comment from being added. | `false`                                                                         |
 
 
-### Prompt
-If you want to create your own prompt, use {original_title} and {issue_body} to insert the required variables into the text.
+### Prompt and Style
 
-Default prompt:
-```
-You are an expert at writing clear, concise, and descriptive GitHub issue titles.
-Please analyze the following issue title and determine if it needs improvement.
-If the title is already clear, specific, and well-formatted, return the original title unchanged.
-Otherwise, improve it to make it more specific, actionable, and easy to understand.
-The improved title should clearly communicate the problem or feature request.
+You can use the `style` option to apply a predefined prompt.
+A few prompt styles are already available for use: `default`, `polite-suggestion`, `summarization`, and `task-order`.
+For the full list, visit: [style_prompts folder](https://github.com/horw/issue-title-ai/tree/main/style_prompts).
+Contributions are welcome—feel free to add your own prompt file and open a pull request!
 
-Original Issue Title: "{original_title}"
+By default, the `default` style is used.
 
-Issue Description:
-\"\"\"
-{issue_body}
-\"\"\"
+If you prefer to directly provide a custom prompt without adding it to the `style_prompts` folder, use the `prompt` option instead.
 
-Rules for a good issue title:
-1. Be specific and descriptive
-2. Use action verbs when appropriate
-3. Include relevant context (component name, page, feature)
-4. Keep it concise (under 80 characters ideally)
-5. Avoid vague terms like "bug" or "issue" without context
-6. Don't change the meaning or intent of the original issue
-7. If the original title is already good enough, do not change it
-
-Your response should ONLY contain the improved issue title
-or the original title if it's already good.
-Do not include any other text or explanations.
-```
+When creating a custom prompt, you can use `{original_title}` and `{issue_body}` as placeholders to insert the relevant data.
 
 
 ## 🏷️ Label Management

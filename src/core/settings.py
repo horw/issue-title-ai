@@ -23,36 +23,8 @@ class Config:
         self.verbose = os.environ.get("INPUT_VERBOSE", "false").lower() == "true"
         self.strip_characters = os.environ.get("INPUT_STRIP-CHARACTERS")
         self.model_name = os.environ.get("INPUT_MODEL")
-        self.prompt = os.environ.get(
-            "INPUT_PROMPT",
-            """
-You are an expert at writing clear, concise, and descriptive GitHub issue titles.
-Please analyze the following issue title and determine if it needs improvement.
-If the title is already clear, specific, and well-formatted, return the original title unchanged.
-Otherwise, improve it to make it more specific, actionable, and easy to understand.
-The improved title should clearly communicate the problem or feature request.
 
-Original Issue Title: "{original_title}"
-
-Issue Description:
-\"\"\"
-{issue_body}
-\"\"\"
-
-Rules for a good issue title:
-1. Be specific and descriptive
-2. Use action verbs when appropriate
-3. Include relevant context (component name, page, feature)
-4. Keep it concise (under 80 characters ideally)
-5. Avoid vague terms like "bug" or "issue" without context
-6. Don't change the meaning or intent of the original issue
-7. If the original title is already good enough, do not change it
-
-Your response should ONLY contain the improved issue title
-or the original title if it's already good.
-Do not include any other text or explanations.
-""",
-        )
+        self.prompt = self._retrieve_prompt()
         self.skip_label = os.environ.get("INPUT_SKIP-LABEL", "titled")
 
         # Check if this is an issue event trigger
@@ -74,6 +46,16 @@ Do not include any other text or explanations.
                 print(f"Error parsing event data: {e!s}")
 
         self.ai_provider = self._detect_ai_provider()
+
+    def _retrieve_prompt(self):
+        prompt = os.environ.get("INPUT_PROMPT")
+        if prompt:
+            return prompt
+        style = os.environ.get("INPUT_STYLE", "default")
+        with open(
+            os.path.join(os.path.dirname(__file__), "..", "..", "style_prompts", style)
+        ) as file:
+            return file.read()
 
     def _detect_ai_provider(self):
         explicit = os.environ.get("INPUT_AI-PROVIDER", "").lower()

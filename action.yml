@@ -74,37 +74,18 @@ inputs:
     description: >
       Label to mark processed issues
     required: false
+
+  style:
+    description: >
+      Predefined prompt.
+      To view available prompts, refer to the `style_prompts` folder `https://github.com/horw/issue-title-ai/tree/main/style_prompts`.
+      If you’d like to add a new style and share it with others, please add your file to the folder and submit a pull request (PR).
+    default: "default"
+    required: false
   prompt:
     description: >
-      Custom prompt for the AI model.
-
-      default:
-      You are an expert at writing clear, concise, and descriptive GitHub issue titles.
-      Please analyze the following issue title and determine if it needs improvement.
-      If the title is already clear, specific, and well-formatted, return the original title unchanged.
-      Otherwise, improve it to make it more specific, actionable, and easy to understand.
-      The improved title should clearly communicate the problem or feature request.
-
-      Original Issue Title: "{original_title}"
-
-      Issue Description:
-      \"\"\"
-      {issue_body}
-      \"\"\"
-
-      Rules for a good issue title:
-      1. Be specific and descriptive
-      2. Use action verbs when appropriate
-      3. Include relevant context (component name, page, feature)
-      4. Keep it concise (under 80 characters ideally)
-      5. Avoid vague terms like "bug" or "issue" without context
-      6. Don't change the meaning or intent of the original issue
-      7. If the original title is already good enough, do not change it
-
-      Your response should ONLY contain the improved issue title
-      or the original title if it's already good.
-      Do not include any other text or explanations.
-
+      A custom prompt for the AI model.
+      This will override the selected style, if provided.
     required: false
 
 runs:
