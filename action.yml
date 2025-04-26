@@ -1,16 +1,15 @@
+---
 name: 'Issue Title AI'
 description: 'Improves GitHub issue titles to make them more catchy and helpful using LLM'
 author: 'Igor Udot <horw7001@gmail.com>'
 branding:
   icon: 'edit-3'
   color: 'blue'
-
 inputs:
   github-token:
     description: >
       GitHub token to access the repository issues
     required: true
-
   gemini-api-key:
     description: >
       Google Gemini API key for LLM integration
@@ -33,7 +32,6 @@ inputs:
       However, if there are multiple keys, it is not guaranteed which provider will be selected.
       In this case, you should explicitly specify one of the following: gemini, openai, or deepseek.
     required: false
-
   verbose:
     description: >
       When enabled, prints detailed information including:
@@ -79,20 +77,18 @@ inputs:
     description: >
       Label to mark processed issues
     required: false
-
   style:
     description: >
       Predefined prompt.
       To view available prompts, refer to the `style_prompts` folder `https://github.com/horw/issue-title-ai/tree/main/style_prompts`.
       If you’d like to add a new style and share it with others, please add your file to the folder and submit a pull request (PR).
-    default: "default"
+    default: "summary"
     required: false
   prompt:
     description: >
       A custom prompt for the AI model.
       This will override the selected style, if provided.
     required: false
-
 runs:
   using: 'docker'
   image: 'Dockerfile'

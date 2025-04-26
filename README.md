@@ -45,17 +45,15 @@ Here's an example workflow configuration:
 
 ```yaml
 name: Improve Issue Titles
-
 on:
-  # Run daily at midnight
+  # Run hourly
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 * * * *'
   # Allow manual trigger
   workflow_dispatch:
   # Run when issues are created
   issues:
     types: [opened]
-
 jobs:
   improve-titles:
     runs-on: ubuntu-latest
