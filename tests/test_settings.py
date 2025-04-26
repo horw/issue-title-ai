@@ -405,3 +405,154 @@ def test_config_apply_to_closed():
     ):
         config = Config()
         assert not config.apply_to_closed
+
+
+def test_process_style_file():
+    """Test the _process_style_file method with includes."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+        },
+        clear=True,
+    ):
+        config = Config()
+
+        style_content = "# Title\n\n{include:_header.md}\n\n- Custom rule\n\n{include:_footer.md}"
+        header_content = "Header content"
+        footer_content = "Footer content"
+
+        include_files = ["_header.md", "_footer.md"]
+        styles_dir = "/fake/path/to/styles"
+
+        def mock_open_factory(files_dict):
+            def _open_mock(filename, *args, **kwargs):
+                for key, content in files_dict.items():
+                    if filename.endswith(key):
+                        return mock_open(read_data=content)(*args, **kwargs)
+
+            return _open_mock
+
+        mock_files = {
+            "/fake/path/to/styles/style.md": style_content,
+            "/fake/path/to/styles/_header.md": header_content,
+            "/fake/path/to/styles/_footer.md": footer_content,
+        }
+
+        with patch("builtins.open", side_effect=mock_open_factory(mock_files)):
+            result = config._process_style_file(
+                os.path.join(styles_dir, "style.md"), include_files, styles_dir
+            )
+
+            expected = "# Title\n\nHeader content\n\n- Custom rule\n\nFooter content"
+            assert result == expected
+
+
+def test_process_style_file_missing_include():
+    """Test the _process_style_file method with a non-existent include."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+        },
+        clear=True,
+    ):
+        config = Config()
+
+        style_content = "# Title\n\n{include:_nonexistent.md}\n\n- Custom rule"
+
+        include_files = ["_header.md", "_footer.md"]
+        styles_dir = "/fake/path/to/styles"
+
+        with patch("builtins.open", mock_open(read_data=style_content)):
+            with pytest.raises(Exception) as exc_info:
+                config._process_style_file(
+                    os.path.join(styles_dir, "style.md"), include_files, styles_dir
+                )
+            assert "_nonexistent.md doesn't exist" in str(exc_info.value)
+
+
+def test_retrieve_prompt_with_includes():
+    """Test retrieving a prompt that uses include directives."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_STYLE": "summary",
+        },
+        clear=True,
+    ):
+        all_files = ["summary.md", "order.md", "offense.md", "_header.md", "_footer.md"]
+
+        summary_content = (
+            "# Summary\n\n{include:_header.md}\n\n- Custom rule\n\n{include:_footer.md}"
+        )
+        header_content = "Header content"
+        footer_content = "Footer content"
+
+        with patch("os.listdir", return_value=all_files):
+
+            def mock_open_factory(files_dict):
+                def _open_mock(filename, *args, **kwargs):
+                    for key, content in files_dict.items():
+                        if filename.endswith(key):
+                            return mock_open(read_data=content)(*args, **kwargs)
+
+                return _open_mock
+
+            mock_files = {
+                "summary.md": summary_content,
+                "_header.md": header_content,
+                "_footer.md": footer_content,
+            }
+
+            with patch("builtins.open", side_effect=mock_open_factory(mock_files)):
+                config = Config()
+                expected = "# Summary\n\nHeader content\n\n- Custom rule\n\nFooter content"
+                assert config.prompt == expected
+
+
+def test_retrieve_prompt_handles_missing_include():
+    """Test that _retrieve_prompt handles the case when an include file is missing."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_STYLE": "summary",
+        },
+        clear=True,
+    ):
+        all_files = ["summary.md", "order.md", "offense.md", "_header.md"]
+
+        summary_content = (
+            "# Summary\n\n{include:_header.md}\n\n- Custom rule\n\n{include:_footer.md}"
+        )
+        header_content = "Header content"
+
+        with patch("os.listdir", return_value=all_files):
+
+            def mock_open_factory(files_dict):
+                def _open_mock(filename, *args, **kwargs):
+                    for key, content in files_dict.items():
+                        if filename.endswith(key):
+                            return mock_open(read_data=content)(*args, **kwargs)
+
+                return _open_mock
+
+            mock_files = {
+                "summary.md": summary_content,
+                "_header.md": header_content,
+            }
+
+            with patch("builtins.open", side_effect=mock_open_factory(mock_files)):
+                with pytest.raises(Exception) as exc_info:
+                    Config()
+                assert "_footer.md doesn't exist" in str(exc_info.value)

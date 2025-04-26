@@ -6,4 +6,5 @@ MD013:
   tables: false
 MD024:
   siblings_only: true
+MD041: false
 MD033: false
