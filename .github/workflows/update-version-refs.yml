@@ -8,15 +8,13 @@ on:
 jobs:
   update-version-refs:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      actions: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: main  # Ensure we're always updating the main branch
+          token: ${{ secrets.WORKFLOW_TOKEN }} # https://github.com/orgs/community/discussions/35410#discussioncomment-7645702
 
       - name: Extract tag name
         id: get_tag
