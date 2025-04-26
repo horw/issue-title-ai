@@ -54,6 +54,12 @@ class Config:
         if prompt:
             return prompt
         style = os.environ.get("INPUT_STYLE", "summary")
+        prompts = os.listdir(os.path.join(os.path.dirname(__file__), "..", "..", "style_prompts"))
+        if style not in prompts:
+            raise Exception(
+                f"Style {style} is not supported, please use one of {', '.join(prompts)}"
+            )
+
         with open(
             os.path.join(os.path.dirname(__file__), "..", "..", "style_prompts", style)
         ) as file:

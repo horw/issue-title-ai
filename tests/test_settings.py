@@ -246,7 +246,7 @@ def test_retrieve_prompt_from_style_file():
             "INPUT_GITHUB-TOKEN": "test-token",
             "GITHUB_REPOSITORY": "owner/repo",
             "INPUT_GEMINI-API-KEY": "test-gemini-key",
-            "INPUT_STYLE": "custom_style",
+            "INPUT_STYLE": "summary",
         },
         clear=True,
     ):
@@ -254,6 +254,23 @@ def test_retrieve_prompt_from_style_file():
         with patch("builtins.open", mock_open(read_data=mock_file_content)):
             config = Config()
             assert config.prompt == "This is a custom style prompt"
+
+
+def test_retrieve_not_exists_prompt_from_style_file():
+    """Test retrieving not exists prompt from style file when INPUT_PROMPT is not set."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_STYLE": "lala",
+        },
+        clear=True,
+    ):
+        with pytest.raises(Exception) as exc_info:
+            _ = Config()
+        assert "Style lala is not supported" in str(exc_info.value)
 
 
 def test_retrieve_prompt_default_style():
