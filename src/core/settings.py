@@ -54,15 +54,22 @@ class Config:
         if prompt:
             return prompt
         style = os.environ.get("INPUT_STYLE", "summary")
-        prompts = os.listdir(os.path.join(os.path.dirname(__file__), "..", "..", "style_prompts"))
-        if style not in prompts:
+
+        styles_dir = os.path.join(os.path.dirname(__file__), "..", "..", "styles")
+
+        matched_file = None
+        for filename in os.listdir(styles_dir):
+            if os.path.splitext(filename)[0] == style:
+                matched_file = filename
+                break
+
+        if not matched_file:
+            available_styles = [os.path.splitext(f)[0] for f in os.listdir(styles_dir)]
             raise Exception(
-                f"Style {style} is not supported, please use one of {', '.join(prompts)}"
+                f"Style {style} is not supported, please use one of {', '.join(available_styles)}"
             )
 
-        with open(
-            os.path.join(os.path.dirname(__file__), "..", "..", "style_prompts", style)
-        ) as file:
+        with open(os.path.join(styles_dir, matched_file)) as file:
             return file.read()
 
     def _parse_labels(self, labels_str):

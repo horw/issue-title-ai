@@ -92,7 +92,7 @@ Or you can check this [example](./.github/workflows/example.yml)
 | `model`            | AI model to use                                                                                                                                                               | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
 | `skip-label`       | Label to mark processed issues                                                                                                                                                | `titled`                                                                        |
 | `prompt`           | Custom prompt for the AI model                                                                                                                                                | [Optional](#prompt)                                                             |
-| `style`            | Predefined prompt. To view available prompts, refer to the `style_prompts` folder `https://github.com/horw/issue-title-ai/tree/main/style_prompts`                            | "default"                                                                       |
+| `style`            | Predefined prompt. To view available prompts, refer to the `styles` folder `https://github.com/horw/issue-title-ai/tree/main/styles`                                          | "summary"                                                                       |
 | `verbose`          | When enabled, prints detailed information, including input, response, and token usage                                                                                         | false                                                                           |
 | `strip-characters` | Allows removing unwanted characters (e.g., quotes) from the beginning and end of the response                                                                                 | ""                                                                              |
 | `quiet`            | By default, auto-update adds a comment to your pull request. You can skip this behavior by setting this parameter to 'true', which will prevent the comment from being added. | `false`                                                                         |
@@ -102,12 +102,12 @@ Or you can check this [example](./.github/workflows/example.yml)
 
 You can use the `style` option to apply a predefined prompt.
 A few prompt styles are already available for use: `summary`, `order`, and `offense`.
-For the full list, visit: [style_prompts folder](https://github.com/horw/issue-title-ai/tree/main/style_prompts).
+For the full list, visit: [styles folder](https://github.com/horw/issue-title-ai/tree/main/styles).
 Contributions are welcome—feel free to add your own prompt file and open a pull request!
 
 By default, the `summary` style is used.
 
-If you prefer to directly provide a custom prompt without adding it to the `style_prompts` folder, use the `prompt` option instead.
+If you prefer to directly provide a custom prompt without adding it to the `styles` folder, use the `prompt` option instead.
 
 When creating a custom prompt, you can use `{original_title}` and `{issue_body}` as placeholders to insert the relevant data.
 

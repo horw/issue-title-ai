@@ -85,7 +85,7 @@ inputs:
   style:
     description: >
       Predefined prompt.
-      To view available prompts, refer to the `style_prompts` folder `https://github.com/horw/issue-title-ai/tree/main/style_prompts`.
+      To view available prompts, refer to the `styles` folder `https://github.com/horw/issue-title-ai/tree/main/styles`.
       If you’d like to add a new style and share it with others, please add your file to the folder and submit a pull request (PR).
     default: "summary"
     required: false
