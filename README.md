@@ -104,7 +104,7 @@ A few prompt styles are already available for use: `summary`, `order`, and `offe
 For the full list, visit: [style_prompts folder](https://github.com/horw/issue-title-ai/tree/main/style_prompts).
 Contributions are welcome—feel free to add your own prompt file and open a pull request!
 
-By default, the `default` style is used.
+By default, the `summary` style is used.
 
 If you prefer to directly provide a custom prompt without adding it to the `style_prompts` folder, use the `prompt` option instead.
 
