@@ -27,18 +27,18 @@ class IssueProcessor:
             }
 
         if self.required_labels:
-            intersection = set(issue.labels).intersection(set(self.required_labels))
-            if intersection:
-                print(f"Labels were found: {intersection}, issue will be processed")
-            else:
-                print("No matching labels found, issue will not be processed")
+            intersection = set(issue_labels).intersection(set(self.required_labels))
+            if not intersection:
+                print(
+                    f"No matching labels ({self.required_labels}) found in {issue_labels}; issue will not be processed."
+                )
                 return {
                     "issue_number": issue_number,
                     "original_title": original_title,
                     "improved_title": None,
                     "updated": False,
                     "skipped": True,
-                    "reason": f"No matching labels found in '{self.required_labels}'",
+                    "reason": f"No matching labels found. Current Issue Labels: '{issue_labels}'; Required Labels: '{self.required_labels}'",
                 }
 
         print(f'Processing issue #{issue_number}: "{original_title}"')
