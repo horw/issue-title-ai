@@ -45,17 +45,15 @@ Here's an example workflow configuration:
 
 ```yaml
 name: Improve Issue Titles
-
 on:
-  # Run daily at midnight
+  # Run hourly
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 * * * *'
   # Allow manual trigger
   workflow_dispatch:
   # Run when issues are created
   issues:
     types: [opened]
-
 jobs:
   improve-titles:
     runs-on: ubuntu-latest
@@ -102,11 +100,11 @@ Or you can check this [example](./.github/workflows/example.yml)
 ### Prompt and Style
 
 You can use the `style` option to apply a predefined prompt.
-A few prompt styles are already available for use: `default`, `polite-suggestion`, `summarization`, and `task-order`.
+A few prompt styles are already available for use: `summary`, `order`, and `offense`.
 For the full list, visit: [style_prompts folder](https://github.com/horw/issue-title-ai/tree/main/style_prompts).
 Contributions are welcome—feel free to add your own prompt file and open a pull request!
 
-By default, the `default` style is used.
+By default, the `summary` style is used.
 
 If you prefer to directly provide a custom prompt without adding it to the `style_prompts` folder, use the `prompt` option instead.
 

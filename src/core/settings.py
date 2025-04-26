@@ -52,7 +52,7 @@ class Config:
         prompt = os.environ.get("INPUT_PROMPT")
         if prompt:
             return prompt
-        style = os.environ.get("INPUT_STYLE", "default")
+        style = os.environ.get("INPUT_STYLE", "summary")
         with open(
             os.path.join(os.path.dirname(__file__), "..", "..", "style_prompts", style)
         ) as file:
