@@ -2,19 +2,20 @@ from .verbose import verbose_print
 
 
 class IssueProcessor:
-    def __init__(self, ai_client, github_client, prompt, skip_label):
+    def __init__(self, ai_client, github_client, prompt, skip_label, required_labels=None):
         self.ai_client = ai_client
         self.github_client = github_client
         self.prompt = prompt
         self.skip_label = skip_label
+        self.required_labels = required_labels
 
     def process_issue(self, issue, auto_update=False, strip_characters="", quiet=False):
         issue_number = issue.number
         original_title = issue.title
         issue_body = issue.body or ""
 
-        labels = [label.name.lower() for label in issue.labels]
-        if self.skip_label in labels:
+        issue_labels = [label.name.lower() for label in issue.labels]
+        if self.skip_label in issue_labels:
             print(f"Skipping issue #{issue_number}: Already has '{self.skip_label}' label")
             return {
                 "issue_number": issue_number,
@@ -24,6 +25,22 @@ class IssueProcessor:
                 "skipped": True,
                 "reason": f"Has '{self.skip_label}' label",
             }
+
+        if self.required_labels:
+            intersection = set(issue.labels).intersection(set(self.required_labels))
+            if intersection:
+                print(f"Labels were found: {intersection}, issue will be processed")
+            else:
+                print("No matching labels found, issue will not be processed")
+                return {
+                    "issue_number": issue_number,
+                    "original_title": original_title,
+                    "improved_title": None,
+                    "updated": False,
+                    "skipped": True,
+                    "reason": f"No matching labels found in '{self.required_labels}'",
+                }
+
         print(f'Processing issue #{issue_number}: "{original_title}"')
 
         try:

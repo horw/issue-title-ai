@@ -42,6 +42,7 @@ def mock_config():
     config.skip_label = "titled"
     config.is_issue_event = False
     config.issue_number = None
+    config.required_labels = []
     return config
 
 
@@ -86,7 +87,10 @@ def test_scan_issue_event_no_issues(mock_config, mock_ai_client, mock_github_cli
     results = scan_issue_event(mock_config, mock_repo, mock_ai_client, mock_github_client)
 
     mock_github_client.get_recent_issues.assert_called_once_with(
-        repo=mock_repo, days_to_scan=mock_config.days_to_scan, limit=mock_config.max_issues
+        repo=mock_repo,
+        days_to_scan=mock_config.days_to_scan,
+        limit=mock_config.max_issues,
+        required_labels=[],
     )
     assert len(results) == 0
 
@@ -99,7 +103,10 @@ def test_scan_issue_event_with_issues(
     results = scan_issue_event(mock_config, mock_repo, mock_ai_client, mock_github_client)
 
     mock_github_client.get_recent_issues.assert_called_once_with(
-        repo=mock_repo, days_to_scan=mock_config.days_to_scan, limit=mock_config.max_issues
+        repo=mock_repo,
+        days_to_scan=mock_config.days_to_scan,
+        limit=mock_config.max_issues,
+        required_labels=[],
     )
     assert len(results) == 1
     assert results[0]["issue_number"] == 1

@@ -13,7 +13,9 @@ def open_issue_event(config, repo_obj, ai_client, github_client):
     print(f"Processing single issue #{config.issue_number} from event trigger")
     try:
         issue = repo_obj.get_issue(config.issue_number)
-        issue_processor = IssueProcessor(ai_client, github_client, config.prompt, config.skip_label)
+        issue_processor = IssueProcessor(
+            ai_client, github_client, config.prompt, config.skip_label, config.required_labels
+        )
         result = issue_processor.process_issue(
             issue=issue,
             auto_update=config.auto_update,
@@ -27,18 +29,26 @@ def open_issue_event(config, repo_obj, ai_client, github_client):
 
 
 def scan_issue_event(config, repo_obj, ai_client, github_client):
-    # Regular scheduled run - process all recent issues
+    print("Regular scheduled run - process all recent issues")
     recent_issues = github_client.get_recent_issues(
-        repo=repo_obj, days_to_scan=config.days_to_scan, limit=config.max_issues
+        repo=repo_obj,
+        days_to_scan=config.days_to_scan,
+        limit=config.max_issues,
+        required_labels=config.required_labels,
     )
 
     if not recent_issues:
-        print(f"No open issues found in the last {config.days_to_scan} days")
+        message = f"No open issues found in the last {config.days_to_scan} days"
+        if config.required_labels:
+            message += f" with the following labels: {', '.join(config.required_labels)}"
+        print(message)
         return []
 
     print(f"Found {len(recent_issues)} issues to process")
 
-    issue_processor = IssueProcessor(ai_client, github_client, config.prompt, config.skip_label)
+    issue_processor = IssueProcessor(
+        ai_client, github_client, config.prompt, config.skip_label, config.required_labels
+    )
 
     results = []
     for i, issue in enumerate(recent_issues, 1):

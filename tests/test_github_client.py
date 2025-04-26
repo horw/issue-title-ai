@@ -70,6 +70,40 @@ def test_get_recent_issues_error():
             client.get_recent_issues(mock_repo)
 
 
+def test_get_recent_issues_with_labels():
+    """Test filtering issues by labels."""
+    mock_github = Mock()
+    mock_repo = Mock()
+
+    # Create mock issues
+    mock_issue1 = Mock()
+    mock_issue1.created_at = datetime.datetime.now()
+    mock_issue1.pull_request = None
+
+    mock_repo.get_issues.return_value = [mock_issue1]
+
+    with patch("src.core.github_client.Github", return_value=mock_github):
+        client = GitHubClient("valid-token")
+
+        # Test with single label
+        client.get_recent_issues(mock_repo, required_labels=["bug"])
+        mock_repo.get_issues.assert_called_with(
+            state="open", sort="created", direction="desc", labels=["bug"]
+        )
+
+        # Test with multiple labels
+        client.get_recent_issues(mock_repo, required_labels=["bug", "enhancement"])
+        mock_repo.get_issues.assert_called_with(
+            state="open", sort="created", direction="desc", labels=["bug", "enhancement"]
+        )
+
+        # Test with no labels
+        client.get_recent_issues(mock_repo, required_labels=[])
+        mock_repo.get_issues.assert_called_with(
+            state="open", sort="created", direction="desc", labels=None
+        )
+
+
 def test_update_issue_title_success():
     mock_github = Mock()
     mock_issue = Mock()

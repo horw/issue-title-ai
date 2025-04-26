@@ -47,6 +47,11 @@ inputs:
       Maximum number of issues that will be retrieved from GitHub.
       This setting does not apply when triggered by an open issue..
     default: '100'
+  required-labels:
+    description: >
+      Filter issues by specific labels (comma-separated). Only issues with at least one of the specified labels will be processed.
+      Example: "bug, enhancement" will process only issues labeled as bug or enhancement.
+    required: false
   strip-characters:
     description: >
       The best practice is to specify the prompt correctly. However, sometimes the model may return responses

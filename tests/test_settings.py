@@ -286,3 +286,61 @@ def test_retrieve_prompt_default_style_file_exists():
         clear=True,
     ):
         Config()
+
+
+def test_parse_labels():
+    """Test parsing of input labels."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+        },
+        clear=True,
+    ):
+        # Test with no labels
+        config = Config()
+        assert config.required_labels == []
+
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_REQUIRED-LABELS": "bug, enhancement",
+        },
+        clear=True,
+    ):
+        # Test with multiple labels
+        config = Config()
+        assert config.required_labels == ["bug", "enhancement"]
+
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_REQUIRED-LABELS": "bug",
+        },
+        clear=True,
+    ):
+        # Test with a single label
+        config = Config()
+        assert config.required_labels == ["bug"]
+
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_REQUIRED-LABELS": " bug, , enhancement ",
+        },
+        clear=True,
+    ):
+        # Test with extra spaces and empty labels
+        config = Config()
+        assert config.required_labels == ["bug", "enhancement"]
