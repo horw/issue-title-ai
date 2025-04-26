@@ -1,0 +1,53 @@
+name: Update Version References
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on any tag starting with 'v'
+
+jobs:
+  update-version-refs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main  # Ensure we're always updating the main branch
+
+      - name: Extract tag name
+        id: get_tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Update version in README.md
+        run: |
+          # Use sed to replace version in README.md
+          sed -i "s|horw/issue-title-ai@v[0-9]\+\.[0-9]\+\.[0-9]\+[a-z]*|horw/issue-title-ai@${{ steps.get_tag.outputs.tag }}|g" README.md
+          echo "Updated README.md to use version ${{ steps.get_tag.outputs.tag }}"
+
+      - name: Update version in example workflow
+        run: |
+          # Use sed to replace version in example.yml
+          sed -i "s|horw/issue-title-ai@v[0-9]\+\.[0-9]\+\.[0-9]\+[a-z]*|horw/issue-title-ai@${{ steps.get_tag.outputs.tag }}|g" .github/workflows/example.yml
+          echo "Updated example.yml to use version ${{ steps.get_tag.outputs.tag }}"
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md .github/workflows/example.yml
+          git commit -m "Update version references to ${{ steps.get_tag.outputs.tag }}"
+          git push
