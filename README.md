@@ -103,6 +103,16 @@ A few prompt styles are already available for use: `summary`, `order`, and `offe
 For the full list, visit: [styles folder](https://github.com/horw/issue-title-ai/tree/main/styles).
 Contributions are welcome—feel free to add your own prompt file and open a pull request!
 
+---
+
+#### Style Files Best Practices
+
+1. Save style files inside the `styles` folder.
+2. Use clear, descriptive filenames that make their purpose easy to understand.
+3. For common patterns, use templating. Example: `{include:_footer.md}`
+
+---
+
 By default, the `summary` style is used.
 
 If you prefer to directly provide a custom prompt without adding it to the `styles` folder, use the `prompt` option instead.

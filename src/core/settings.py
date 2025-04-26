@@ -1,4 +1,5 @@
 import os
+import re
 
 
 class Config:
@@ -57,20 +58,45 @@ class Config:
 
         styles_dir = os.path.join(os.path.dirname(__file__), "..", "..", "styles")
 
+        all_files = os.listdir(styles_dir)
+        style_files = [f for f in all_files if not f.startswith("_")]
+        include_files = [f for f in all_files if f.startswith("_")]
+
         matched_file = None
-        for filename in os.listdir(styles_dir):
+        for filename in style_files:
             if os.path.splitext(filename)[0] == style:
                 matched_file = filename
                 break
 
         if not matched_file:
-            available_styles = [os.path.splitext(f)[0] for f in os.listdir(styles_dir)]
+            available_styles = [os.path.splitext(f)[0] for f in style_files]
             raise Exception(
                 f"Style {style} is not supported, please use one of {', '.join(available_styles)}"
             )
 
-        with open(os.path.join(styles_dir, matched_file)) as file:
-            return file.read()
+        prompt_content = self._process_style_file(
+            os.path.join(styles_dir, matched_file), include_files, styles_dir
+        )
+        return prompt_content
+
+    def _process_style_file(self, file_path, include_files, styles_dir):
+        """Process a style file and handle any includes."""
+        with open(file_path) as file:
+            content = file.read()
+
+        def replace_include(match):
+            include_path = match.group(1).strip()
+            if include_path not in include_files:
+                raise Exception(
+                    f"Included file {include_path} doesn't exist, please use one of {', '.join(include_files)}"
+                )
+
+            full_path = os.path.join(styles_dir, include_path)
+            with open(full_path) as include_file:
+                return include_file.read()
+
+        processed_content = re.sub(r"{include:(.*?)}", replace_include, content)
+        return processed_content
 
     def _parse_labels(self, labels_str):
         """Parse comma-separated labels string into a list of labels."""
