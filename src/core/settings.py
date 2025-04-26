@@ -9,6 +9,7 @@ class Config:
         self.auto_update = os.environ.get("INPUT_AUTO-UPDATE", "false").lower() == "true"
         self.quiet = os.environ.get("INPUT_QUIET", "false").lower() == "true"
         self.max_issues = int(os.environ.get("INPUT_MAX-ISSUES", "100"))
+        self.required_labels = self._parse_labels(os.environ.get("INPUT_REQUIRED-LABELS", ""))
 
         self.gemini_api_key = os.environ.get("INPUT_GEMINI-API-KEY")
         self.openai_api_key = os.environ.get("INPUT_OPENAI-API-KEY")
@@ -56,6 +57,12 @@ class Config:
             os.path.join(os.path.dirname(__file__), "..", "..", "style_prompts", style)
         ) as file:
             return file.read()
+
+    def _parse_labels(self, labels_str):
+        """Parse comma-separated labels string into a list of labels."""
+        if not labels_str:
+            return []
+        return [label.strip() for label in labels_str.split(",") if label.strip()]
 
     def _detect_ai_provider(self):
         explicit = os.environ.get("INPUT_AI-PROVIDER", "").lower()

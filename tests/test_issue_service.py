@@ -189,3 +189,84 @@ def test_strip_chars(processor):
     processor.github_client.add_issue_label.assert_called_once_with(
         mock_issue, processor.skip_label
     )
+
+
+@pytest.mark.parametrize("required_labels", ([], ["bug", "enhancement"]))
+def test_required_labels_filtering_should_process(required_labels):
+    from unittest.mock import MagicMock
+
+    from src.core.issue_service import IssueProcessor
+
+    # Mock dependencies
+    ai_client = MagicMock()
+    github_client = MagicMock()
+    prompt = "Test prompt"
+    skip_label = "no-improve"
+
+    # Test case: Issue has matching labels and should be processed
+    issue_processor = IssueProcessor(ai_client, github_client, prompt, skip_label, required_labels)
+
+    # Mock an issue with matching labels
+    issue = MagicMock()
+    issue.number = 123
+    issue.title = "Original Issue Title"
+    issue.body = "Issue body"
+
+    # Create mock labels with name attributes that will match required_labels
+    bug_label = MagicMock()
+    bug_label.name = "bug"
+    feature_label = MagicMock()
+    feature_label.name = "feature"
+
+    issue.labels = [bug_label, feature_label]
+
+    # Patch the generate_improved_title method to avoid actual AI calls
+    with patch.object(issue_processor, "generate_improved_title", return_value="Improved Title"):
+        # Process the issue
+        result = issue_processor.process_issue(issue)
+        # Assert that the issue was processed and not skipped
+        assert result["issue_number"] == 123
+        assert result["original_title"] == "Original Issue Title"
+        assert result["improved_title"] == "Improved Title"
+        assert result.get("skipped") is None  # Not skipped
+
+
+def test_required_labels_filtering_will_skip():
+    """Test that issues are filtered correctly based on required labels."""
+    from unittest.mock import MagicMock
+
+    from src.core.issue_service import IssueProcessor
+
+    ai_client = MagicMock()
+    github_client = MagicMock()
+    prompt = "Test prompt"
+    skip_label = "no-improve"
+    required_labels = ["bug", "enhancement"]
+
+    # Test case: Issue has no matching labels and should be skipped
+    issue_processor = IssueProcessor(ai_client, github_client, prompt, skip_label, required_labels)
+
+    # Mock an issue with no matching labels
+    issue = MagicMock()
+    issue.number = 456
+    issue.title = "Another Issue Title"
+    issue.body = "Another issue body"
+
+    # Create mock labels with name attributes that won't match required_labels
+    feature_label = MagicMock()
+    feature_label.name = "feature"
+    doc_label = MagicMock()
+    doc_label.name = "documentation"
+
+    issue.labels = [feature_label, doc_label]
+
+    # Process the issue
+    result = issue_processor.process_issue(issue)
+
+    # Assert that the issue is skipped with the correct reason
+    assert result["issue_number"] == 456
+    assert result["original_title"] == "Another Issue Title"
+    assert result["improved_title"] is None
+    assert result["updated"] is False
+    assert result["skipped"] is True
+    assert "No matching labels found" in result["reason"]
