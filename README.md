@@ -74,7 +74,6 @@ jobs:
 
 Or you can check this [example](./.github/workflows/example.yml)
 
-
 ## ⚙️ Configuration Options
 
 | Option             | Description                                                                                                                                                                   | Default                                                                         |
@@ -91,12 +90,11 @@ Or you can check this [example](./.github/workflows/example.yml)
 | `ai-provider`      | AI provider to use: 'openai', 'gemini', or 'deepseek'                                                                                                                         | Auto-detected based on provided keys                                            |
 | `model`            | AI model to use                                                                                                                                                               | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
 | `skip-label`       | Label to mark processed issues                                                                                                                                                | `titled`                                                                        |
-| `prompt`           | Custom prompt for the AI model                                                                                                                                                | [Optional](#prompt)                                                             |
+| `prompt`           | Custom prompt for the AI model                                                                                                                                                | [None](#Prompt and Style)                                                       |
 | `style`            | Predefined prompt. To view available prompts, refer to the `styles` folder `https://github.com/horw/issue-title-ai/tree/main/styles`                                          | "summary"                                                                       |
 | `verbose`          | When enabled, prints detailed information, including input, response, and token usage                                                                                         | false                                                                           |
 | `strip-characters` | Allows removing unwanted characters (e.g., quotes) from the beginning and end of the response                                                                                 | ""                                                                              |
 | `quiet`            | By default, auto-update adds a comment to your pull request. You can skip this behavior by setting this parameter to 'true', which will prevent the comment from being added. | `false`                                                                         |
-
 
 ### Prompt and Style
 
@@ -110,7 +108,6 @@ By default, the `summary` style is used.
 If you prefer to directly provide a custom prompt without adding it to the `styles` folder, use the `prompt` option instead.
 
 When creating a custom prompt, you can use `{original_title}` and `{issue_body}` as placeholders to insert the relevant data.
-
 
 ## 🏷️ Label Management
 
@@ -134,18 +131,21 @@ The project uses the following development tools:
 To run the tool locally for testing or development:
 
 1. Clone the repository:
-   ```
+
+   ```bash
    git clone https://github.com/horw/issue-title-ai.git
    cd issue-title-ai
    ```
 
 2. Install requirements:
-   ```
+
+   ```bash
    pip install -e ".[dev]"
    ```
 
 3. Set environment variables and run the main script:
-   ```
+
+   ```bash
    export INPUT_GITHUB-TOKEN=your_github_token
    # Use one of these based on your preferred AI provider
    export INPUT_OPENAI-API-KEY=your_openai_api_key
