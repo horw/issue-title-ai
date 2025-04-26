@@ -220,3 +220,69 @@ def test_event_data_parsing_error():
                 config = Config()
 
                 assert config.issue_number is None
+
+
+def test_retrieve_prompt_from_env():
+    """Test retrieving prompt directly from INPUT_PROMPT env var."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_PROMPT": "Custom prompt from env",
+        },
+        clear=True,
+    ):
+        config = Config()
+        assert config.prompt == "Custom prompt from env"
+
+
+def test_retrieve_prompt_from_style_file():
+    """Test retrieving prompt from style file when INPUT_PROMPT is not set."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_STYLE": "custom_style",
+        },
+        clear=True,
+    ):
+        mock_file_content = "This is a custom style prompt"
+        with patch("builtins.open", mock_open(read_data=mock_file_content)):
+            config = Config()
+            assert config.prompt == "This is a custom style prompt"
+
+
+def test_retrieve_prompt_default_style():
+    """Test retrieving prompt using default style when neither INPUT_PROMPT nor INPUT_STYLE are set."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+        },
+        clear=True,
+    ):
+        # Mock the file open and read operations
+        mock_file_content = "This is the default style prompt"
+        with patch("builtins.open", mock_open(read_data=mock_file_content)):
+            config = Config()
+            assert config.prompt == "This is the default style prompt"
+
+
+def test_retrieve_prompt_default_style_file_exists():
+    """Test default style file exists."""
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+        },
+        clear=True,
+    ):
+        Config()
