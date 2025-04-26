@@ -67,6 +67,11 @@ inputs:
       Automatically update issue titles without confirmation
     required: false
     default: 'false'
+  apply-to-closed:
+    description: >
+      Process both open and closed issues. By default, only open issues are processed.
+    required: false
+    default: 'false'
   quiet:
     description: >
       By default, auto-update adds a comment to your pull request.

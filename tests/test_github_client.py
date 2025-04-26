@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -102,6 +102,31 @@ def test_get_recent_issues_with_labels():
         mock_repo.get_issues.assert_called_with(
             state="open", sort="created", direction="desc", labels=None
         )
+
+
+def test_get_recent_issues_with_apply_to_closed():
+    """Test that get_recent_issues respects the apply_to_closed parameter."""
+    mock_repo = MagicMock()
+
+    github_client = GitHubClient("test-token")
+
+    github_client.get_recent_issues(mock_repo, days_to_scan=7, limit=100)
+    mock_repo.get_issues.assert_called_with(
+        state="open",
+        sort="created",
+        direction="desc",
+        labels=None,
+    )
+
+    mock_repo.get_issues.reset_mock()
+
+    github_client.get_recent_issues(mock_repo, days_to_scan=7, limit=100, apply_to_closed=True)
+    mock_repo.get_issues.assert_called_with(
+        state="all",
+        sort="created",
+        direction="desc",
+        labels=None,
+    )
 
 
 def test_update_issue_title_success():

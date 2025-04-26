@@ -43,6 +43,7 @@ def mock_config():
     config.is_issue_event = False
     config.issue_number = None
     config.required_labels = []
+    config.apply_to_closed = False
     return config
 
 
@@ -91,6 +92,7 @@ def test_scan_issue_event_no_issues(mock_config, mock_ai_client, mock_github_cli
         days_to_scan=mock_config.days_to_scan,
         limit=mock_config.max_issues,
         required_labels=[],
+        apply_to_closed=False,
     )
     assert len(results) == 0
 
@@ -107,6 +109,7 @@ def test_scan_issue_event_with_issues(
         days_to_scan=mock_config.days_to_scan,
         limit=mock_config.max_issues,
         required_labels=[],
+        apply_to_closed=False,
     )
     assert len(results) == 1
     assert results[0]["issue_number"] == 1

@@ -35,6 +35,7 @@ def scan_issue_event(config, repo_obj, ai_client, github_client):
         days_to_scan=config.days_to_scan,
         limit=config.max_issues,
         required_labels=config.required_labels,
+        apply_to_closed=config.apply_to_closed,
     )
 
     if not recent_issues:
@@ -44,7 +45,8 @@ def scan_issue_event(config, repo_obj, ai_client, github_client):
         print(message)
         return []
 
-    print(f"Found {len(recent_issues)} issues to process")
+    issue_state = "open and closed" if config.apply_to_closed else "open"
+    print(f"Found {len(recent_issues)} `{issue_state}` issues to process")
 
     issue_processor = IssueProcessor(
         ai_client, github_client, config.prompt, config.skip_label, config.required_labels

@@ -344,3 +344,47 @@ def test_parse_labels():
         # Test with extra spaces and empty labels
         config = Config()
         assert config.required_labels == ["bug", "enhancement"]
+
+
+def test_config_apply_to_closed():
+    """Test that apply-to-closed option is parsed correctly from environment variables."""
+    # Test default value (false)
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+        },
+        clear=True,
+    ):
+        config = Config()
+        assert not config.apply_to_closed
+
+    # Test explicit value (true)
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_APPLY-TO-CLOSED": "true",
+        },
+        clear=True,
+    ):
+        config = Config()
+        assert config.apply_to_closed
+
+    # Test explicit value (false)
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_APPLY-TO-CLOSED": "false",
+        },
+        clear=True,
+    ):
+        config = Config()
+        assert not config.apply_to_closed
