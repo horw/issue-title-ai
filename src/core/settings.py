@@ -10,6 +10,7 @@ class Config:
         self.quiet = os.environ.get("INPUT_QUIET", "false").lower() == "true"
         self.max_issues = int(os.environ.get("INPUT_MAX-ISSUES", "100"))
         self.required_labels = self._parse_labels(os.environ.get("INPUT_REQUIRED-LABELS", ""))
+        self.apply_to_closed = os.environ.get("INPUT_APPLY-TO-CLOSED", "false").lower() == "true"
 
         self.gemini_api_key = os.environ.get("INPUT_GEMINI-API-KEY")
         self.openai_api_key = os.environ.get("INPUT_OPENAI-API-KEY")

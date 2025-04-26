@@ -16,12 +16,16 @@ class GitHubClient:
             print(f"Error accessing repository {repo_name}: {e!s}")
             raise
 
-    def get_recent_issues(self, repo, days_to_scan=7, limit=100, required_labels=None):
+    def get_recent_issues(
+        self, repo, days_to_scan=7, limit=100, required_labels=None, apply_to_closed=False
+    ):
         date_threshold = datetime.datetime.now() - datetime.timedelta(days=days_to_scan)
 
         try:
+            state = "all" if apply_to_closed else "open"
+
             all_issues = repo.get_issues(
-                state="open",
+                state=state,
                 sort="created",
                 direction="desc",
                 labels=required_labels if required_labels else None,
