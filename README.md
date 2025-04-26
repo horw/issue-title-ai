@@ -100,7 +100,7 @@ Or you can check this [example](./.github/workflows/example.yml)
 ### Prompt and Style
 
 You can use the `style` option to apply a predefined prompt.
-A few prompt styles are already available for use: `default`, `polite-suggestion`, `summarization`, and `task-order`.
+A few prompt styles are already available for use: `summary`, `order`, and `offense`.
 For the full list, visit: [style_prompts folder](https://github.com/horw/issue-title-ai/tree/main/style_prompts).
 Contributions are welcome—feel free to add your own prompt file and open a pull request!
 
