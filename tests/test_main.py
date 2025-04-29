@@ -28,9 +28,11 @@ def mock_repo():
 @pytest.fixture
 def mock_config():
     config = Mock()
-    config.ai_provider = "gemini"
-    config.model_name = "gemini-2.0-flash"
-    config.get_api_key.return_value = "fake_key"
+    config.ai_provider = {
+        "provider" : "gemini",
+        "api_key" : "fake_key",
+        "model"   : "gemini-2.0-flash",
+    }
     config.strip_characters = None
     # Use a safer approach for sensitive credentials in tests
     config.github_token = "DUMMY_TOKEN_FOR_TESTING"  # noqa: S105
@@ -139,11 +141,11 @@ def test_run_issue_event(
 
     run()
 
-    mock_config.validate.assert_called_once()
+    ai_provider_params = mock_config.ai_provider
     mock_create_ai.assert_called_once_with(
-        provider=mock_config.ai_provider,
-        api_key=mock_config.get_api_key(),
-        model_name=mock_config.model_name,
+        provider=ai_provider_params["provider"],
+        api_key=ai_provider_params["api_key"],
+        model=ai_provider_params["model"],
     )
     mock_github_client_cls.assert_called_once_with(mock_config.github_token)
     mock_github_client.get_repository.assert_called_once_with(mock_config.repo_name)
