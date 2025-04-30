@@ -76,7 +76,7 @@ def run():
         set_verbose(config.verbose)
         
         ai_provider = config.ai_provider
-        print(f"Using {ai_provider["provider"]} with model: {ai_provider['model']}")
+        print(f"Using {ai_provider['provider']} with model: {ai_provider['model']}")
         ai_client = create_ai_client(**ai_provider)
         
         github_client = GitHubClient(config.github_token)
