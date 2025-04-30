@@ -395,7 +395,7 @@ def test_process_style_file():
         footer_content = "Footer content"
 
         include_files = ["_header.md", "_footer.md"]
-        styles_dir = "/fake/path/to/styles"
+        styles_dir = os.path.normpath("/fake/path/to/styles")
 
         def mock_open_factory(files_dict):
             def _open_mock(filename, *args, **kwargs):
@@ -406,9 +406,9 @@ def test_process_style_file():
             return _open_mock
 
         mock_files = {
-            "/fake/path/to/styles/style.md": style_content,
-            "/fake/path/to/styles/_header.md": header_content,
-            "/fake/path/to/styles/_footer.md": footer_content,
+            os.path.normpath("/fake/path/to/styles/style.md"): style_content,
+            os.path.normpath("/fake/path/to/styles/_header.md"): header_content,
+            os.path.normpath("/fake/path/to/styles/_footer.md"): footer_content,
         }
 
         with patch("builtins.open", side_effect=mock_open_factory(mock_files)):
@@ -436,7 +436,7 @@ def test_process_style_file_missing_include():
         style_content = "# Title\n\n{include:_nonexistent.md}\n\n- Custom rule"
 
         include_files = ["_header.md", "_footer.md"]
-        styles_dir = "/fake/path/to/styles"
+        styles_dir = os.path.normpath("/fake/path/to/styles")
 
         with patch("builtins.open", mock_open(read_data=style_content)):
             with pytest.raises(Exception) as exc_info:
