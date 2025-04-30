@@ -129,7 +129,7 @@ class Config:
             if self.explicit_provider:
                 return self.ai_providers[self.explicit_provider]
 
-            ai_provider = random.choice(list(self.ai_providers.keys()))
+            ai_provider = random.choice(list(self.ai_providers.keys())) # nosec
             return self.ai_providers[ai_provider]
         raise ValueError("No LLM API key was provided. Please provide one of the following: deepseek, gemini, openai.")
 
