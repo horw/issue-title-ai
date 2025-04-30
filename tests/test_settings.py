@@ -1,5 +1,6 @@
 import json
 import os
+import random
 from unittest.mock import mock_open, patch
 
 import pytest
@@ -115,6 +116,7 @@ def test_detect_ai_provider_random():
         },
         clear=True,
     ):
+        random.seed(1)
         llms_selected = {Config().ai_provider["provider"] for _ in range(100)}
         assert llms_selected == {"gemini", "openai", "deepseek"}
 
