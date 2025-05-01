@@ -131,9 +131,7 @@ class Config:
 
     @property
     def ai_provider(self):
-        ai_provider_name = self.ai_providers[self.explicit_provider] \
-            if self.explicit_provider \
-            else ai_provider = random.choice(list(self.ai_providers.keys())) # noqa: S311
+        ai_provider_name = self.ai_providers[self.explicit_provider] if self.explicit_provider else random.choice(list(self.ai_providers.keys())) # noqa: S311
         return self.ai_providers[ai_provider_name]
 
     def validate(self):
