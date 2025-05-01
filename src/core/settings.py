@@ -12,7 +12,7 @@ class Config:
         self.max_issues = int(os.environ.get("INPUT_MAX-ISSUES", "100"))
         self.required_labels = self._parse_labels(os.environ.get("INPUT_REQUIRED-LABELS", ""))
         self.apply_to_closed = os.environ.get("INPUT_APPLY-TO-CLOSED", "false").lower() == "true"
-        self.ai_providers = self._get_llm_configs()
+        self._get_llm_configs()
 
         self.verbose = os.environ.get("INPUT_VERBOSE", "false").lower() == "true"
         self.strip_characters = os.environ.get("INPUT_STRIP-CHARACTERS")
@@ -116,22 +116,27 @@ class Config:
             "model"    : os.environ.get("INPUT_DEEPSEEK-MODEL")
         }
 
+        if not ai_providers:
+            raise ValueError("No LLM API key was provided. Please provide one of the following: deepseek, gemini, openai.")
+
         self.explicit_provider = os.environ.get("INPUT_AI-PROVIDER", "").lower()
         if self.explicit_provider:
             if self.explicit_provider not in ai_providers:
                 raise ValueError(f"API key not found for {self.explicit_provider}")
             ai_providers = {self.explicit_provider : ai_providers[self.explicit_provider]}
-        return ai_providers
+        self.ai_providers = ai_providers
 
     @property
     def ai_provider(self):
-        if self.ai_providers:
-            if self.explicit_provider:
-                return self.ai_providers[self.explicit_provider]
+        if len(self.ai_providers) == 1:
+            self.explicit_provider = list(self.ai_providers)[0]
 
-            ai_provider = random.choice(list(self.ai_providers.keys())) # nosec
-            return self.ai_providers[ai_provider]
-        raise ValueError("No LLM API key was provided. Please provide one of the following: deepseek, gemini, openai.")
+        if self.explicit_provider:
+            ai_provider = self.ai_providers[self.explicit_provider]
+        else:
+            ai_provider = random.choice(list(self.ai_providers.keys())) # noqa: S311
+
+        return self.ai_providers[ai_provider]
 
     def validate(self):
         if not self.github_token:
@@ -139,5 +144,3 @@ class Config:
 
         if not self.repo_name:
             raise ValueError("GitHub repository name is required")
-
-        self.ai_provider
