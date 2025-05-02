@@ -96,42 +96,40 @@ class Config:
         openai_api_key   = os.environ.get("INPUT_OPENAI-API-KEY")
         deepseek_api_key = os.environ.get("INPUT_DEEPSEEK-API-KEY")
 
-        self.ai_providers = {}
+        ai_providers = {}
         if gemini_api_key:
-            self.ai_providers["gemini"] = {
+            ai_providers["gemini"] = {
             "provider" : "gemini",
             "api_key"  : gemini_api_key,
             "model"    : os.environ.get("INPUT_GEMINI-MODEL")
         }
         if openai_api_key:
-            self.ai_providers["openai"] = {
+            ai_providers["openai"] = {
             "provider" : "openai",
             "api_key"  : openai_api_key,
             "model"    : os.environ.get("INPUT_OPENAI-MODEL")
         }
         if deepseek_api_key:
-            self.ai_providers["deepseek"] = {
+            ai_providers["deepseek"] = {
             "provider" : "deepseek",
             "api_key"  : deepseek_api_key,
             "model"    : os.environ.get("INPUT_DEEPSEEK-MODEL")
         }
 
-        if not self.ai_providers:
+        if not ai_providers:
             raise ValueError("No LLM API key was provided. Please provide one of the following: deepseek, gemini, openai.")
 
-        self.explicit_provider = os.environ.get("INPUT_AI-PROVIDER", "").lower()
-        if self.explicit_provider and self.explicit_provider not in self.ai_providers:
-            raise ValueError(f"API key not found for {self.explicit_provider}")
+        explicit_provider = os.environ.get("INPUT_AI-PROVIDER", "").lower()
+        if explicit_provider:
+            if explicit_provider not in ai_providers:
+                raise ValueError(f"API key not found for {explicit_provider}")
+            ai_providers = {explicit_provider : ai_providers[explicit_provider]}
 
-        if len(self.ai_providers) == 1:
-            self.explicit_provider = list(self.ai_providers)[0]
-
-        if self.explicit_provider:
-            self.ai_providers = {self.explicit_provider : self.ai_providers[self.explicit_provider]}
+        return ai_providers
 
     @property
     def ai_provider(self):
-        ai_provider_name = self.ai_providers[self.explicit_provider] if self.explicit_provider else random.choice(list(self.ai_providers.keys())) # noqa: S311
+        ai_provider_name = random.choice(list(self.ai_providers.keys())) # noqa: S311
         return self.ai_providers[ai_provider_name]
 
     def validate(self):
