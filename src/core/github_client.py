@@ -1,13 +1,13 @@
 import datetime
 
-from github import Github
+from github import Github, Auth
 
 
 class GitHubClient:
     def __init__(self, token):
         if not token:
             raise ValueError("GitHub token not provided")
-        self.client = Github(token)
+        self.client = Github(auth=Auth.Token(token))
 
     def get_repository(self, repo_name):
         try:

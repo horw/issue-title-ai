@@ -1,12 +1,13 @@
 """IssueTitleAI: GitHub issue title improvement tool."""
 
 import sys
+import random
 
-from core.github_client import GitHubClient
-from core.issue_service import IssueProcessor
-from core.llm import create_ai_client
-from core.settings import Config
-from core.verbose import set_verbose
+from src.core.github_client import GitHubClient
+from src.core.issue_service import IssueProcessor
+from src.core.llm import create_ai_client
+from src.core.settings import Config
+from src.core.verbose import set_verbose
 
 
 def open_issue_event(config, repo_obj, ai_client, github_client):
@@ -71,14 +72,13 @@ def scan_issue_event(config, repo_obj, ai_client, github_client):
 def run():
     try:
         config = Config()
-        config.validate()
 
-        print(f"Using {config.ai_provider} with model: {config.model_name}")
         set_verbose(config.verbose)
 
-        ai_client = create_ai_client(
-            provider=config.ai_provider, api_key=config.get_api_key(), model_name=config.model_name
-        )
+        ai_provider = config.ai_provider
+        print(f"Using {ai_provider['provider']} with model: {ai_provider['model']}")
+        ai_client = create_ai_client(**ai_provider)
+
         github_client = GitHubClient(config.github_token)
 
         print(f"Scanning repository: {config.repo_name}")
