@@ -12,7 +12,7 @@ class Config:
         self.max_issues = int(os.environ.get("INPUT_MAX-ISSUES", "100"))
         self.required_labels = self._parse_labels(os.environ.get("INPUT_REQUIRED-LABELS", ""))
         self.apply_to_closed = os.environ.get("INPUT_APPLY-TO-CLOSED", "false").lower() == "true"
-        self._get_llm_configs()
+        self.ai_providers = self._get_llm_configs()
 
         self.verbose = os.environ.get("INPUT_VERBOSE", "false").lower() == "true"
         self.strip_characters = os.environ.get("INPUT_STRIP-CHARACTERS")
