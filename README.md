@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Improve Issue Titles
-        uses: horw/issue-title-ai@v0.1.4b
+        uses: horw/issue-title-ai@v0.1.7b
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Choose one of these API keys based on your preference

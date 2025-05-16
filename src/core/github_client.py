@@ -25,14 +25,16 @@ class GitHubClient:
             state = "all" if apply_to_closed else "open"
 
             all_issues = repo.get_issues(
-                state=state,
-                sort="created",
-                direction="desc",
-                labels=required_labels if required_labels else None,
+                state=state, sort="created", direction="desc", since=date_threshold
             )
 
             recent_issues = []
+            required_labels = set(required_labels or [])
+
             for issue in all_issues:
+                if required_labels:
+                    if not any(label.name in required_labels for label in issue.labels):
+                        continue
                 if issue.created_at >= date_threshold and not issue.pull_request:
                     recent_issues.append(issue)
                 if len(recent_issues) >= limit:

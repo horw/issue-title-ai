@@ -25,6 +25,7 @@ class Config:
         self.event_path = os.environ.get("GITHUB_EVENT_PATH")
         self.is_issue_event = self.event_name == "issues"
         self.issue_number = None
+        self.event_data = None
 
         # If it's an issue event, get the issue number
         if self.is_issue_event and self.event_path and os.path.exists(self.event_path):
@@ -33,6 +34,7 @@ class Config:
 
                 with open(self.event_path) as f:
                     event_data = json.load(f)
+                    self.event_data = event_data
                     if "issue" in event_data and "number" in event_data["issue"]:
                         self.issue_number = event_data["issue"]["number"]
             except Exception as e:

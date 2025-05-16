@@ -3,17 +3,22 @@
 import sys
 import random
 
-from src.core.github_client import GitHubClient
-from src.core.issue_service import IssueProcessor
-from src.core.llm import create_ai_client
-from src.core.settings import Config
-from src.core.verbose import set_verbose
+from core.github_client import GitHubClient
+from core.issue_service import IssueProcessor
+from core.llm import create_ai_client
+from core.pre_checks import block_user_title_edit
+from core.settings import Config
+from core.verbose import set_verbose
 
 
 def open_issue_event(config, repo_obj, ai_client, github_client):
     print(f"Processing single issue #{config.issue_number} from event trigger")
     try:
         issue = repo_obj.get_issue(config.issue_number)
+
+        if block_user_title_edit(config.event_data, config.skip_label, github_client, issue):
+            return []
+
         issue_processor = IssueProcessor(
             ai_client, github_client, config.prompt, config.skip_label, config.required_labels
         )

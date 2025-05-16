@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import ANY, MagicMock, Mock, patch
 
 import pytest
 
@@ -75,33 +75,64 @@ def test_get_recent_issues_with_labels():
     mock_github = Mock()
     mock_repo = Mock()
 
+    # Labels
+    enhancement_label = Mock()
+    enhancement_label.name = "enhancement"
+    bug_label = Mock()
+    bug_label.name = "bug"
+
     # Create mock issues
     mock_issue1 = Mock()
     mock_issue1.created_at = datetime.datetime.now()
     mock_issue1.pull_request = None
+    mock_issue1.labels = [enhancement_label, bug_label]
 
-    mock_repo.get_issues.return_value = [mock_issue1]
+    mock_issue2 = Mock()
+    mock_issue2.created_at = datetime.datetime.now()
+    mock_issue2.pull_request = None
+    mock_issue2.labels = [bug_label]
+
+    mock_issue3 = Mock()
+    mock_issue3.created_at = datetime.datetime.now()
+    mock_issue3.pull_request = None
+    mock_issue3.labels = [enhancement_label]
+
+    mock_issue4 = Mock()
+    mock_issue4.created_at = datetime.datetime.now()
+    mock_issue4.pull_request = None
+    mock_issue4.labels = []
+
+    mock_repo.get_issues.return_value = [mock_issue1, mock_issue2, mock_issue3, mock_issue4]
 
     with patch("src.core.github_client.Github", return_value=mock_github):
         client = GitHubClient("valid-token")
 
         # Test with single label
-        client.get_recent_issues(mock_repo, required_labels=["bug"])
+        issues = client.get_recent_issues(mock_repo, required_labels=["bug"])
         mock_repo.get_issues.assert_called_with(
-            state="open", sort="created", direction="desc", labels=["bug"]
+            state="open", sort="created", direction="desc", since=ANY
         )
+        assert len(issues) == 2
+
+        issues = client.get_recent_issues(mock_repo, required_labels=["enhancement"])
+        mock_repo.get_issues.assert_called_with(
+            state="open", sort="created", direction="desc", since=ANY
+        )
+        assert len(issues) == 2
 
         # Test with multiple labels
-        client.get_recent_issues(mock_repo, required_labels=["bug", "enhancement"])
+        issues = client.get_recent_issues(mock_repo, required_labels=["bug", "enhancement"])
         mock_repo.get_issues.assert_called_with(
-            state="open", sort="created", direction="desc", labels=["bug", "enhancement"]
+            state="open", sort="created", direction="desc", since=ANY
         )
+        assert len(issues) == 3
 
         # Test with no labels
-        client.get_recent_issues(mock_repo, required_labels=[])
+        issues = client.get_recent_issues(mock_repo, required_labels=[])
         mock_repo.get_issues.assert_called_with(
-            state="open", sort="created", direction="desc", labels=None
+            state="open", sort="created", direction="desc", since=ANY
         )
+        assert len(issues) == 4
 
 
 def test_get_recent_issues_with_apply_to_closed():
@@ -112,20 +143,14 @@ def test_get_recent_issues_with_apply_to_closed():
 
     github_client.get_recent_issues(mock_repo, days_to_scan=7, limit=100)
     mock_repo.get_issues.assert_called_with(
-        state="open",
-        sort="created",
-        direction="desc",
-        labels=None,
+        state="open", sort="created", direction="desc", since=ANY
     )
 
     mock_repo.get_issues.reset_mock()
 
     github_client.get_recent_issues(mock_repo, days_to_scan=7, limit=100, apply_to_closed=True)
     mock_repo.get_issues.assert_called_with(
-        state="all",
-        sort="created",
-        direction="desc",
-        labels=None,
+        state="all", sort="created", direction="desc", since=ANY
     )
 
 
