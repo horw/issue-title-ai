@@ -44,6 +44,7 @@ def mock_config():
     config.issue_number = None
     config.required_labels = []
     config.apply_to_closed = False
+    config.event_data = None
     return config
 
 
@@ -70,6 +71,41 @@ def test_open_issue_event(mock_config, mock_ai_client, mock_github_client, mock_
     assert len(results) == 1
     assert results[0]["improved_title"] == "Improved title"
     assert results[0]["issue_number"] == 1
+
+
+def test_open_issue_event_with_editing(
+    mock_config, mock_ai_client, mock_github_client, mock_repo, mock_issue
+):
+    mock_config.issue_number = 1
+    mock_repo.get_issue.return_value = mock_issue
+
+    # Setup event_data to simulate a title edit
+    mock_config.event_data = {
+        "action": "edited",
+        "sender": {"type": "User"},
+        "changes": {"title": {"from": "Previous title"}},
+        "issue": {"labels": [{"name": "titled"}]},
+    }
+
+    # Add the 'titled' label to the mock issue to match the event_data
+    mock_issue.labels = [{"name": "titled"}]
+
+    results = open_issue_event(mock_config, mock_repo, mock_ai_client, mock_github_client)
+
+    # Should have called get_issue
+    mock_repo.get_issue.assert_called_once_with(1)
+
+    # Since the issue has the 'titled' label and was edited, block_user_title_edit should have
+    # returned True and no results should be returned
+    assert len(results) == 0
+
+    # Verify that the issue was edited back to its previous title
+    mock_issue.edit.assert_called_once_with(title="Previous title")
+
+    # Verify that a comment was added explaining the title change was not allowed
+    mock_github_client.add_issue_comment.assert_called_once_with(
+        mock_issue, "This issue has already been processed. Please do not change the title."
+    )
 
 
 def test_open_issue_event_error(mock_config, mock_ai_client, mock_github_client, mock_repo):
