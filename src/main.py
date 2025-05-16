@@ -1,7 +1,7 @@
 """IssueTitleAI: GitHub issue title improvement tool."""
 
-import sys
 import random
+import sys
 
 from core.github_client import GitHubClient
 from core.issue_service import IssueProcessor

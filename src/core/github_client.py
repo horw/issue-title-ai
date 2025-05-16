@@ -1,6 +1,6 @@
 import datetime
 
-from github import Github, Auth
+from github import Auth, Github
 
 
 class GitHubClient:

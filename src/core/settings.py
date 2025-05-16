@@ -1,6 +1,7 @@
 import os
-import re
 import random
+import re
+
 
 class Config:
     def __init__(self):
@@ -78,7 +79,9 @@ class Config:
         def replace_include(match):
             include_path = match.group(1).strip()
             if include_path not in include_files:
-                raise Exception(f"Included file {include_path} doesn't exist, please use one of {', '.join(include_files)}")
+                raise Exception(
+                    f"Included file {include_path} doesn't exist, please use one of {', '.join(include_files)}"
+                )
 
             full_path = os.path.join(styles_dir, include_path)
             with open(full_path) as include_file:
@@ -94,44 +97,46 @@ class Config:
         return [label.strip() for label in labels_str.split(",") if label.strip()]
 
     def _get_llm_configs(self):
-        gemini_api_key   = os.environ.get("INPUT_GEMINI-API-KEY")
-        openai_api_key   = os.environ.get("INPUT_OPENAI-API-KEY")
+        gemini_api_key = os.environ.get("INPUT_GEMINI-API-KEY")
+        openai_api_key = os.environ.get("INPUT_OPENAI-API-KEY")
         deepseek_api_key = os.environ.get("INPUT_DEEPSEEK-API-KEY")
 
         ai_providers = {}
         if gemini_api_key:
             ai_providers["gemini"] = {
-            "provider" : "gemini",
-            "api_key"  : gemini_api_key,
-            "model"    : os.environ.get("INPUT_GEMINI-MODEL")
-        }
+                "provider": "gemini",
+                "api_key": gemini_api_key,
+                "model": os.environ.get("INPUT_GEMINI-MODEL"),
+            }
         if openai_api_key:
             ai_providers["openai"] = {
-            "provider" : "openai",
-            "api_key"  : openai_api_key,
-            "model"    : os.environ.get("INPUT_OPENAI-MODEL")
-        }
+                "provider": "openai",
+                "api_key": openai_api_key,
+                "model": os.environ.get("INPUT_OPENAI-MODEL"),
+            }
         if deepseek_api_key:
             ai_providers["deepseek"] = {
-            "provider" : "deepseek",
-            "api_key"  : deepseek_api_key,
-            "model"    : os.environ.get("INPUT_DEEPSEEK-MODEL")
-        }
+                "provider": "deepseek",
+                "api_key": deepseek_api_key,
+                "model": os.environ.get("INPUT_DEEPSEEK-MODEL"),
+            }
 
         if not ai_providers:
-            raise ValueError("No LLM API key was provided. Please provide one of the following: deepseek, gemini, openai.")
+            raise ValueError(
+                "No LLM API key was provided. Please provide one of the following: deepseek, gemini, openai."
+            )
 
         explicit_provider = os.environ.get("INPUT_AI-PROVIDER", "").lower()
         if explicit_provider:
             if explicit_provider not in ai_providers:
                 raise ValueError(f"API key not found for {explicit_provider}")
-            ai_providers = {explicit_provider : ai_providers[explicit_provider]}
+            ai_providers = {explicit_provider: ai_providers[explicit_provider]}
 
         return ai_providers
 
     @property
     def ai_provider(self):
-        ai_provider_name = random.choice(list(self.ai_providers.keys())) # noqa: S311
+        ai_provider_name = random.choice(list(self.ai_providers.keys()))  # noqa: S311
         return self.ai_providers[ai_provider_name]
 
     def validate(self):

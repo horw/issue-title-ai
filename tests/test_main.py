@@ -29,9 +29,9 @@ def mock_repo():
 def mock_config():
     config = Mock()
     config.ai_provider = {
-        "provider" : "gemini",
-        "api_key" : "fake_key",
-        "model"   : "gemini-2.0-flash",
+        "provider": "gemini",
+        "api_key": "fake_key",
+        "model": "gemini-2.0-flash",
     }
     config.strip_characters = None
     # Use a safer approach for sensitive credentials in tests

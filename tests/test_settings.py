@@ -43,9 +43,9 @@ def test_config_init(mock_env):
             assert config.auto_update is True
             assert config.max_issues == 50
             assert config.ai_provider == {
-                "provider" : "gemini",
-                "api_key"  : "test-gemini-key",
-                "model"    : "gemini-2.0-flash"
+                "provider": "gemini",
+                "api_key": "test-gemini-key",
+                "model": "gemini-2.0-flash",
             }
             assert config.prompt == "Test prompt"
             assert config.skip_label == "no-improve"
@@ -175,6 +175,7 @@ def test_validate_missing_repo_name():
         with pytest.raises(ValueError, match="GitHub repository name is required"):
             Config()
 
+
 def test_event_data_parsing_error():
     with patch.dict(
         os.environ,
@@ -187,7 +188,10 @@ def test_event_data_parsing_error():
         },
         clear=True,
     ):
-        with patch("os.path.exists", return_value=True), patch("builtins.open", mock_open(read_data="invalid json")):
+        with (
+            patch("os.path.exists", return_value=True),
+            patch("builtins.open", mock_open(read_data="invalid json")),
+        ):
             config = Config()
             assert config.issue_number is None
 
