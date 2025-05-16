@@ -90,7 +90,7 @@ pydantic==2.11.3
     # via openai
 pydantic-core==2.33.1
     # via pydantic
-pygithub==1.58.2
+pygithub>=1.59.0
     # via issue-title-ai (pyproject.toml)
 pyjwt[crypto]==2.10.1
     # via pygithub
