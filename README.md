@@ -65,36 +65,38 @@ jobs:
           # Choose one of these API keys based on your preference
           # openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
+          gemini-model: gemini-2.0-flash
           # deepseek-api-key: ${{ secrets.DEEPSEEK_API_KEY }}
           days-to-scan: 7
           auto-update: false
           max-issues: 100
-          model: gemini-2.0-flash
 ```
 
 Or you can check this [example](./.github/workflows/example.yml)
 
 ## ⚙️ Configuration Options
 
-| Option             | Description                                                                                                                                                                   | Default                                                                         |
-|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
-| `github-token`     | GitHub token for authentication                                                                                                                                               | Required                                                                        |
-| `openai-api-key`   | OpenAI API key (if using OpenAI)                                                                                                                                              | Optional                                                                        |
-| `gemini-api-key`   | Gemini API key (if using Gemini)                                                                                                                                              | Optional                                                                        |
-| `deepseek-api-key` | Deepseek API key (if using Deepseek)                                                                                                                                          | Optional                                                                        |
-| `days-to-scan`     | Number of days to look back for issues                                                                                                                                        | `7`                                                                             |
-| `auto-update`      | Automatically update titles if `true`, otherwise just suggest                                                                                                                 | `false`                                                                         |
-| `apply-to-closed`  | Process both open and closed issues if `true`. By default, only open issues are processed                                                                                     | `false`                                                                         |
-| `max-issues`       | Maximum number of issues to process per run                                                                                                                                   | `100`                                                                           |
-| `required-labels`  | Filter issues by specific labels (comma-separated). Only issues with at least one of the specified labels will be processed                                                   | None (process all issues)                                                       |
-| `ai-provider`      | AI provider to use: 'openai', 'gemini', or 'deepseek'                                                                                                                         | Auto-detected based on provided keys                                            |
-| `model`            | AI model to use                                                                                                                                                               | `gpt-4` for OpenAI, `gemini-2.0-flash` for Gemini, `deepseek-chat` for Deepseek |
-| `skip-label`       | Label to mark processed issues                                                                                                                                                | `titled`                                                                        |
-| `prompt`           | Custom prompt for the AI model                                                                                                                                                | [None](#Prompt and Style)                                                       |
-| `style`            | Predefined prompt. To view available prompts, refer to the `styles` folder `https://github.com/horw/issue-title-ai/tree/main/styles`                                          | "summary"                                                                       |
-| `verbose`          | When enabled, prints detailed information, including input, response, and token usage                                                                                         | false                                                                           |
-| `strip-characters` | Allows removing unwanted characters (e.g., quotes) from the beginning and end of the response                                                                                 | ""                                                                              |
-| `quiet`            | By default, auto-update adds a comment to your pull request. You can skip this behavior by setting this parameter to 'true', which will prevent the comment from being added. | `false`                                                                         |
+| Option             | Description                                                                                                                                                                   | Default                              |
+|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| `github-token`     | GitHub token for authentication                                                                                                                                               | Required                             |
+| `openai-api-key`   | OpenAI API key (if using OpenAI)                                                                                                                                              | Optional                             |
+| `openai-model`     | OpenAI AI model to use                                                                                                                                                        | `gpt-4`                              |
+| `gemini-api-key`   | Google Gemini API key (if using Gemini)                                                                                                                                       | Optional                             |
+| `gemini-model`     | Google Gemini AI model to use                                                                                                                                                 | `gemini-2.0-flash`                   |
+| `deepseek-api-key` | Deepseek API key (if using Deepseek)                                                                                                                                          | Optional                             |
+| `deepseek-model`   | Deepseek AI model to use                                                                                                                                                      | `deepseek-chat`                      |
+| `days-to-scan`     | Number of days to look back for issues                                                                                                                                        | `7`                                  |
+| `auto-update`      | Automatically update titles if `true`, otherwise just suggest                                                                                                                 | `false`                              |
+| `apply-to-closed`  | Process both open and closed issues if `true`. By default, only open issues are processed                                                                                     | `false`                              |
+| `max-issues`       | Maximum number of issues to process per run                                                                                                                                   | `100`                                |
+| `required-labels`  | Filter issues by specific labels (comma-separated). Only issues with at least one of the specified labels will be processed                                                   | None (process all issues)            |
+| `ai-provider`      | AI provider to use: 'openai', 'gemini', or 'deepseek'                                                                                                                         | Auto-detected based on provided keys |
+| `skip-label`       | Label to mark processed issues                                                                                                                                                | `titled`                             |
+| `prompt`           | Custom prompt for the AI model                                                                                                                                                | [None](#Prompt and Style)            |
+| `style`            | Predefined prompt. To view available prompts, refer to the `styles` folder `https://github.com/horw/issue-title-ai/tree/main/styles`                                          | "summary"                            |
+| `verbose`          | When enabled, prints detailed information, including input, response, and token usage                                                                                         | false                                |
+| `strip-characters` | Allows removing unwanted characters (e.g., quotes) from the beginning and end of the response                                                                                 | ""                                   |
+| `quiet`            | By default, auto-update adds a comment to your pull request. You can skip this behavior by setting this parameter to 'true', which will prevent the comment from being added. | `false`                              |
 
 ### Prompt and Style
 

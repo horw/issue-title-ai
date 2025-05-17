@@ -14,22 +14,30 @@ inputs:
     description: >
       Google Gemini API key for LLM integration
     required: false
+  gemini-model:
+    description: >
+      Google Gemini LLM model to use
+    required: false
   openai-api-key:
     description: >
       OpenAI API key for LLM integration
+    required: false
+  openai-model:
+    description: >
+      OpenAI LLM model to use
     required: false
   deepseek-api-key:
     description: >
       DeepSeek API key for LLM integration
     required: false
-  model:
+  deepseek-model:
     description: >
-      LLM model to use
+      DeepSeek LLM model to use
     required: false
   ai-provider:
     description: >
       By default, the LLM provider is chosen based on the provided API key.
-      However, if there are multiple keys, it is not guaranteed which provider will be selected.
+      However, if there are multiple keys, a random provider will be selected.
       In this case, you should explicitly specify one of the following: gemini, openai, or deepseek.
     required: false
   verbose:
