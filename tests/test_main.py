@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from src.main import open_issue_event, run, scan_issue_event
+from tests.common import RegexStr
 
 
 @pytest.fixture
@@ -104,7 +105,7 @@ def test_open_issue_event_with_editing(
 
     # Verify that a comment was added explaining the title change was not allowed
     mock_github_client.add_issue_comment.assert_called_once_with(
-        mock_issue, "This issue has already been processed. Please do not change the title."
+        mock_issue, RegexStr("Please avoid editing")
     )
 
 
