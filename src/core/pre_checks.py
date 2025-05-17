@@ -13,7 +13,12 @@ def block_user_title_edit(event_data, skip_label, github_client, issue):
         return False
 
     github_client.add_issue_comment(
-        issue, "This issue has already been processed. Please do not change the title."
+        issue,
+        "The title of this issue was changed intentionally. "
+        "Please avoid editing it unless you strongly disagree with the modifications. "
+        "I only make changes when I'm confident they're necessary. "
+        "A well-written title helps programmers and testers better understand the issue's intent, "
+        "which leads to more effective and enthusiastic contributions. I appreciate your cooperation.",
     )
     issue.edit(title=previous_title)
     return True
