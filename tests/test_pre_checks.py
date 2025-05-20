@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from src.core.pre_checks import block_user_title_edit
+from tests.common import RegexStr
 
 
 @pytest.fixture
@@ -41,7 +42,7 @@ def test_block_user_title_edit_success(mock_event_data, mock_github_client, mock
 
     # Assert comment was added with correct message
     mock_github_client.add_issue_comment.assert_called_once_with(
-        mock_issue, "This issue has already been processed. Please do not change the title."
+        mock_issue, RegexStr("Please avoid editing")
     )
 
     # Assert title was reverted back to the original
