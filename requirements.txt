@@ -90,7 +90,7 @@ pydantic==2.11.3
     # via openai
 pydantic-core==2.33.1
     # via pydantic
-pygithub>=1.59.0
+pygithub==2.6.1
     # via issue-title-ai (pyproject.toml)
 pyjwt[crypto]==2.10.1
     # via pygithub
@@ -120,6 +120,8 @@ typing-extensions==4.13.2
 typing-inspection==0.4.0
     # via pydantic
 urllib3==2.4.0
-    # via requests
+    # via
+    #   pygithub
+    #   requests
 wrapt==1.17.2
     # via deprecated
