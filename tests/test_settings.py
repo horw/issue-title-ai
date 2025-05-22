@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import warnings
 from unittest.mock import mock_open, patch
 
 import pytest
@@ -70,6 +71,28 @@ def test_config_defaults():
         assert config.max_issues == 100  # Default
         assert config.skip_label == "titled"  # Default
         assert config.is_issue_event is False  # Default
+
+
+def test_deprecated_model():
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_MODEL": "gemini-2.0-flash",
+        },
+        clear=True,
+    ):
+        warnings.simplefilter("always")
+
+        with warnings.catch_warnings(record=True) as warns:
+            Config()
+
+            assert len(warns) == 1
+            warn = warns[0]
+            assert issubclass(warn.category, DeprecationWarning)
+            assert "The 'model' attribute is deprecated" in str(warn.message)
 
 
 def test_detect_ai_provider_explicit():

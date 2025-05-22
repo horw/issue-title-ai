@@ -1,6 +1,7 @@
 import os
 import random
 import re
+import warnings
 
 
 class Config:
@@ -120,6 +121,13 @@ class Config:
                 "api_key": deepseek_api_key,
                 "model": os.environ.get("INPUT_DEEPSEEK-MODEL"),
             }
+
+        if os.environ.get("INPUT_MODEL") is not None:
+            warnings.warn(
+                "The 'model' attribute is deprecated; please use 'openai-model', 'gemini-model' or 'deepseek-model' instead.",
+                DeprecationWarning,
+                stacklevel=1,
+            )
 
         if not ai_providers:
             raise ValueError(
