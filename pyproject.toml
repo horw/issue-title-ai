@@ -93,7 +93,7 @@ description = "GitHub issue title improvement tool"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "PyGithub==1.58.2",
+    "PyGithub==2.6.1",
     "google-generativeai==0.3.1",
     "openai>=1.0.0",
 ]

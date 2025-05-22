@@ -1,5 +1,7 @@
 import json
 import os
+import random
+import warnings
 from unittest.mock import mock_open, patch
 
 import pytest
@@ -19,7 +21,7 @@ def mock_env():
         "INPUT_OPENAI-API-KEY": "",
         "INPUT_DEEPSEEK-API-KEY": "",
         "INPUT_AI-PROVIDER": "gemini",
-        "INPUT_MODEL": "gemini-2.0-flash",
+        "INPUT_GEMINI-MODEL": "gemini-2.0-flash",
         "INPUT_PROMPT": "Test prompt",
         "INPUT_SKIP-LABEL": "no-improve",
         "GITHUB_EVENT_NAME": "issues",
@@ -41,11 +43,11 @@ def test_config_init(mock_env):
             assert config.days_to_scan == 5
             assert config.auto_update is True
             assert config.max_issues == 50
-            assert config.gemini_api_key == "test-gemini-key"
-            assert config.openai_api_key == ""
-            assert config.deepseek_api_key == ""
-            assert config.ai_provider == "gemini"
-            assert config.model_name == "gemini-2.0-flash"
+            assert config.ai_provider == {
+                "provider": "gemini",
+                "api_key": "test-gemini-key",
+                "model": "gemini-2.0-flash",
+            }
             assert config.prompt == "Test prompt"
             assert config.skip_label == "no-improve"
             assert config.is_issue_event is True
@@ -71,6 +73,28 @@ def test_config_defaults():
         assert config.is_issue_event is False  # Default
 
 
+def test_deprecated_model():
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_MODEL": "gemini-2.0-flash",
+        },
+        clear=True,
+    ):
+        warnings.simplefilter("always")
+
+        with warnings.catch_warnings(record=True) as warns:
+            Config()
+
+            assert len(warns) == 1
+            warn = warns[0]
+            assert issubclass(warn.category, DeprecationWarning)
+            assert "The 'model' attribute is deprecated" in str(warn.message)
+
+
 def test_detect_ai_provider_explicit():
     with patch.dict(
         os.environ,
@@ -84,7 +108,8 @@ def test_detect_ai_provider_explicit():
         clear=True,
     ):
         config = Config()
-        assert config.ai_provider == "openai"
+        assert config.ai_provider["provider"] == "openai"
+        assert config.ai_provider["api_key"] == "test-openai-key"
 
 
 def test_detect_ai_provider_implicit():
@@ -98,21 +123,40 @@ def test_detect_ai_provider_implicit():
         clear=True,
     ):
         config = Config()
-        assert config.ai_provider == "openai"
+        assert config.ai_provider["provider"] == "openai"
+        assert config.ai_provider["api_key"] == "test-openai-key"
+
+
+def test_detect_ai_provider_random():
+    with patch.dict(
+        os.environ,
+        {
+            "INPUT_GITHUB-TOKEN": "test-token",
+            "GITHUB_REPOSITORY": "owner/repo",
+            "INPUT_GEMINI-API-KEY": "test-gemini-key",
+            "INPUT_OPENAI-API-KEY": "test-openai-key",
+            "INPUT_DEEPSEEK-API-KEY": "test-deepseek-key",
+        },
+        clear=True,
+    ):
+        random.seed(1)
+        llms_selected = {Config().ai_provider["provider"] for _ in range(100)}
+        assert llms_selected == {"gemini", "openai", "deepseek"}
 
 
 def test_detect_ai_provider_missing_explicit_key():
+    ai_provider = "gemini"
     with patch.dict(
         os.environ,
         {
             "INPUT_GITHUB-TOKEN": "test-token",
             "GITHUB_REPOSITORY": "owner/repo",
             "INPUT_OPENAI-API-KEY": "test-openai-key",
-            "INPUT_AI-PROVIDER": "gemini",
+            "INPUT_AI-PROVIDER": ai_provider,
         },
         clear=True,
     ):
-        with pytest.raises(ValueError, match="None API key not provided"):
+        with pytest.raises(ValueError, match=f"API key not found for {ai_provider}"):
             Config()
 
 
@@ -129,37 +173,6 @@ def test_detect_ai_provider_no_keys():
             Config()
 
 
-def test_get_api_key():
-    with patch.dict(
-        os.environ,
-        {
-            "INPUT_GITHUB-TOKEN": "test-token",
-            "GITHUB_REPOSITORY": "owner/repo",
-            "INPUT_GEMINI-API-KEY": "test-gemini-key",
-            "INPUT_OPENAI-API-KEY": "test-openai-key",
-            "INPUT_AI-PROVIDER": "openai",
-        },
-        clear=True,
-    ):
-        config = Config()
-        assert config.get_api_key() == "test-openai-key"
-
-
-def test_validate_success():
-    with patch.dict(
-        os.environ,
-        {
-            "INPUT_GITHUB-TOKEN": "test-token",
-            "GITHUB_REPOSITORY": "owner/repo",
-            "INPUT_GEMINI-API-KEY": "test-gemini-key",
-        },
-        clear=True,
-    ):
-        config = Config()
-        # Should not raise any exceptions
-        config.validate()
-
-
 def test_validate_missing_github_token():
     with patch.dict(
         os.environ,
@@ -169,9 +182,8 @@ def test_validate_missing_github_token():
         },
         clear=True,
     ):
-        config = Config()
         with pytest.raises(ValueError, match="GitHub token is required"):
-            config.validate()
+            Config()
 
 
 def test_validate_missing_repo_name():
@@ -183,24 +195,8 @@ def test_validate_missing_repo_name():
         },
         clear=True,
     ):
-        config = Config()
         with pytest.raises(ValueError, match="GitHub repository name is required"):
-            config.validate()
-
-
-def test_validate_missing_api_key():
-    with patch.dict(
-        os.environ,
-        {
-            "INPUT_GITHUB-TOKEN": "test-token",
-            "GITHUB_REPOSITORY": "owner/repo",
-        },
-        clear=True,
-    ):
-        with patch.object(Config, "_detect_ai_provider", return_value="gemini"):
-            config = Config()
-            with pytest.raises(ValueError, match="API key not found for gemini"):
-                config.validate()
+            Config()
 
 
 def test_event_data_parsing_error():
@@ -215,11 +211,12 @@ def test_event_data_parsing_error():
         },
         clear=True,
     ):
-        with patch("os.path.exists", return_value=True):
-            with patch("builtins.open", mock_open(read_data="invalid json")):
-                config = Config()
-
-                assert config.issue_number is None
+        with (
+            patch("os.path.exists", return_value=True),
+            patch("builtins.open", mock_open(read_data="invalid json")),
+        ):
+            config = Config()
+            assert config.issue_number is None
 
 
 def test_retrieve_prompt_from_env():
@@ -425,7 +422,7 @@ def test_process_style_file():
         footer_content = "Footer content"
 
         include_files = ["_header.md", "_footer.md"]
-        styles_dir = "/fake/path/to/styles"
+        styles_dir = os.path.normpath("/fake/path/to/styles")
 
         def mock_open_factory(files_dict):
             def _open_mock(filename, *args, **kwargs):
@@ -436,9 +433,9 @@ def test_process_style_file():
             return _open_mock
 
         mock_files = {
-            "/fake/path/to/styles/style.md": style_content,
-            "/fake/path/to/styles/_header.md": header_content,
-            "/fake/path/to/styles/_footer.md": footer_content,
+            os.path.normpath("/fake/path/to/styles/style.md"): style_content,
+            os.path.normpath("/fake/path/to/styles/_header.md"): header_content,
+            os.path.normpath("/fake/path/to/styles/_footer.md"): footer_content,
         }
 
         with patch("builtins.open", side_effect=mock_open_factory(mock_files)):
@@ -466,7 +463,7 @@ def test_process_style_file_missing_include():
         style_content = "# Title\n\n{include:_nonexistent.md}\n\n- Custom rule"
 
         include_files = ["_header.md", "_footer.md"]
-        styles_dir = "/fake/path/to/styles"
+        styles_dir = os.path.normpath("/fake/path/to/styles")
 
         with patch("builtins.open", mock_open(read_data=style_content)):
             with pytest.raises(Exception) as exc_info:
