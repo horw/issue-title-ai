@@ -14,6 +14,17 @@ class IssueProcessor:
         original_title = issue.title
         issue_body = issue.body or ""
 
+        if len(issue_body) < 40:
+            print(f"Issue body too short, skipping: {issue_number}, length: {len(issue_body)}")
+            return {
+                "issue_number": issue_number,
+                "original_title": original_title,
+                "improved_title": None,
+                "updated": False,
+                "skipped": True,
+                "reason": "Issue body too short",
+            }
+
         issue_labels = [label.name.lower() for label in issue.labels]
         if self.skip_label in issue_labels:
             print(f"Skipping issue #{issue_number}: Already has '{self.skip_label}' label")

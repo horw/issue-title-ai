@@ -4,6 +4,8 @@ import pytest
 
 from src.core.issue_service import IssueProcessor
 
+issue_body = "Issue body" * 30
+
 
 @pytest.fixture
 def processor():
@@ -18,7 +20,7 @@ def test_process_issue_already_labeled(processor):
     mock_issue = Mock()
     mock_issue.number = 1
     mock_issue.title = "Original title"
-    mock_issue.body = "Issue body"
+    mock_issue.body = issue_body
     mock_label = Mock()
     mock_label.name = processor.skip_label
     mock_issue.labels = [mock_label]
@@ -32,7 +34,7 @@ def test_process_issue_title_already_optimal(processor):
     mock_issue = Mock()
     mock_issue.number = 1
     mock_issue.title = "Original title"
-    mock_issue.body = "Issue body"
+    mock_issue.body = issue_body
     mock_issue.labels = []
 
     processor.ai_client.generate_content.return_value = "Original title"
@@ -45,17 +47,40 @@ def test_process_issue_title_already_optimal(processor):
     assert result["updated"] is False
 
     expected_prompt = processor.prompt.format(
-        original_title="Original title", issue_body="Issue body"
+        original_title="Original title", issue_body=issue_body
     )
-    assert expected_prompt == "Test prompt for Original title and Issue body"
+    assert expected_prompt == f"Test prompt for Original title and {issue_body}"
     processor.ai_client.generate_content.assert_called_once_with(expected_prompt)
+
+
+def test_short_body(processor):
+    mock_issue = Mock()
+    mock_issue.number = 1
+    mock_issue.title = "Original title"
+    mock_issue.body = "Hello"
+    mock_issue.labels = []
+
+    processor.ai_client.generate_content.return_value = "Original title"
+
+    result = processor.process_issue(mock_issue)
+
+    assert result["issue_number"] == 1
+    assert result["original_title"] == "Original title"
+    assert result["improved_title"] is None
+    assert result["updated"] is False
+    assert result["reason"] == "Issue body too short"
+
+    expected_prompt = processor.prompt.format(
+        original_title="Original title", issue_body=issue_body
+    )
+    assert expected_prompt == f"Test prompt for Original title and {issue_body}"
 
 
 def test_process_issue_auto_update(processor):
     mock_issue = Mock()
     mock_issue.number = 1
     mock_issue.title = "Original title"
-    mock_issue.body = "Issue body"
+    mock_issue.body = issue_body
     mock_issue.labels = []
 
     processor.ai_client.generate_content.return_value = "Improved title"
@@ -68,7 +93,7 @@ def test_process_issue_auto_update(processor):
     assert result["updated"] is True
 
     expected_prompt = processor.prompt.format(
-        original_title="Original title", issue_body="Issue body"
+        original_title="Original title", issue_body=issue_body
     )
     processor.ai_client.generate_content.assert_called_once_with(expected_prompt)
 
@@ -83,7 +108,7 @@ def test_process_issue_suggestion_only(processor):
     mock_issue = Mock()
     mock_issue.number = 1
     mock_issue.title = "Original title"
-    mock_issue.body = "Issue body"
+    mock_issue.body = issue_body
     mock_issue.labels = []
 
     processor.ai_client.generate_content.return_value = "Improved title"
@@ -106,7 +131,7 @@ def test_process_issue_error(processor):
     mock_issue = Mock()
     mock_issue.number = 1
     mock_issue.title = "Original title"
-    mock_issue.body = "Issue body"
+    mock_issue.body = issue_body
     mock_issue.labels = []
 
     processor.ai_client.generate_content.side_effect = Exception("API error")
@@ -120,7 +145,7 @@ def test_process_issue_error(processor):
 def test_generate_improved_title(processor):
     mock_issue = Mock()
     mock_issue.title = "Original title"
-    mock_issue.body = "Issue body"
+    mock_issue.body = issue_body
 
     processor.ai_client.generate_content.return_value = "Improved title"
 
@@ -128,7 +153,7 @@ def test_generate_improved_title(processor):
 
     assert result == "Improved title"
     expected_prompt = processor.prompt.format(
-        original_title="Original title", issue_body="Issue body"
+        original_title="Original title", issue_body=issue_body
     )
     processor.ai_client.generate_content.assert_called_once_with(expected_prompt)
 
@@ -137,7 +162,7 @@ def test_quite(processor):
     mock_issue = Mock()
     mock_issue.number = 1
     mock_issue.title = "Original title"
-    mock_issue.body = "Issue body"
+    mock_issue.body = issue_body
     mock_issue.labels = []
 
     processor.ai_client.generate_content.return_value = "Improved title"
@@ -150,7 +175,7 @@ def test_quite(processor):
     assert result["updated"] is True
 
     expected_prompt = processor.prompt.format(
-        original_title="Original title", issue_body="Issue body"
+        original_title="Original title", issue_body=issue_body
     )
     processor.ai_client.generate_content.assert_called_once_with(expected_prompt)
 
@@ -165,7 +190,7 @@ def test_strip_chars(processor):
     mock_issue = Mock()
     mock_issue.number = 1
     mock_issue.title = "Original title"
-    mock_issue.body = "Issue body"
+    mock_issue.body = issue_body
     mock_issue.labels = []
 
     processor.ai_client.generate_content.return_value = "Improved titleHAHAHA"
@@ -180,7 +205,7 @@ def test_strip_chars(processor):
     assert result["updated"] is True
 
     expected_prompt = processor.prompt.format(
-        original_title="Original title", issue_body="Issue body"
+        original_title="Original title", issue_body=issue_body
     )
     processor.ai_client.generate_content.assert_called_once_with(expected_prompt)
 
@@ -210,7 +235,7 @@ def test_required_labels_filtering_should_process(required_labels):
     issue = MagicMock()
     issue.number = 123
     issue.title = "Original Issue Title"
-    issue.body = "Issue body"
+    issue.body = issue_body
 
     # Create mock labels with name attributes that will match required_labels
     bug_label = MagicMock()
@@ -250,7 +275,7 @@ def test_required_labels_filtering_will_skip():
     issue = MagicMock()
     issue.number = 456
     issue.title = "Another Issue Title"
-    issue.body = "Another issue body"
+    issue.body = "Another issue body" * 30
 
     # Create mock labels with name attributes that won't match required_labels
     feature_label = MagicMock()

@@ -5,6 +5,8 @@ import pytest
 from src.main import open_issue_event, run, scan_issue_event
 from tests.common import RegexStr
 
+issue_body = "Issue description" * 30
+
 
 @pytest.fixture
 def mock_issue():
@@ -12,7 +14,7 @@ def mock_issue():
     issue = Mock()
     issue.number = 1
     issue.title = "Original title"
-    issue.body = "Issue description"
+    issue.body = issue_body
     issue.labels = []
     issue.created_at = None
     issue.pull_request = None
