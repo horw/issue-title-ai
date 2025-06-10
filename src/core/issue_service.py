@@ -16,6 +16,14 @@ class IssueProcessor:
 
         if len(issue_body) < 40:
             print(f"Issue body too short, skipping: {issue_number}, length: {len(issue_body)}")
+            comment = (
+                "Hello, your description is too short. "
+                "This usually means the issue is not fully described, "
+                "which can mislead developers. "
+                "Please ensure your description is longer than 40 characters."
+            )
+            self.github_client.add_issue_comment(issue, comment)
+
             return {
                 "issue_number": issue_number,
                 "original_title": original_title,

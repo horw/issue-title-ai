@@ -74,6 +74,7 @@ def test_short_body(processor):
         original_title="Original title", issue_body=issue_body
     )
     assert expected_prompt == f"Test prompt for Original title and {issue_body}"
+    processor.github_client.add_issue_comment.assert_called_once()
 
 
 def test_process_issue_auto_update(processor):
