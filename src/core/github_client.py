@@ -67,3 +67,17 @@ class GitHubClient:
         except Exception as e:
             print(f"Error adding label to issue: {e!s}")
             return False
+
+    def get_labels(self, repo):
+        try:
+            return list(repo.get_labels())
+        except Exception as e:
+            print(f"Error getting labels: {e!s}")
+            return []
+
+    def create_label(self, repo, name, color="ededed", description=None):
+        try:
+            return repo.create_label(name=name, color=color, description=description)
+        except Exception as e:
+            print(f"Error creating label: {e!s}")
+            return None

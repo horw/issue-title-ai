@@ -10,6 +10,17 @@ from core.settings import Config
 from core.verbose import set_verbose
 
 
+def pre_process(github_client, repo_obj, skip_label):
+    existing_labels = github_client.get_labels(repo_obj)
+    label_exists = any(label.name == skip_label for label in existing_labels)
+
+    if not label_exists:
+        github_client.create_label(
+            repo_obj, name=skip_label, color="ededed", description="The title was checked by LLM"
+        )
+        print(f"Created label '{skip_label}' with description")
+
+
 def open_issue_event(config, repo_obj, ai_client, github_client):
     print(f"Processing single issue #{config.issue_number} from event trigger")
     try:
@@ -89,6 +100,7 @@ def run():
         print(f"Scanning repository: {config.repo_name}")
         repo_obj = github_client.get_repository(config.repo_name)
 
+        pre_process(github_client, repo_obj, config.skip_label)
         if config.is_issue_event and config.issue_number:
             open_issue_event(config, repo_obj, ai_client, github_client)
         else:
