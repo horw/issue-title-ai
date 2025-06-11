@@ -2,7 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.main import open_issue_event, run, scan_issue_event
+from src.main import open_issue_event, pre_process, run, scan_issue_event
 from tests.common import RegexStr
 
 issue_body = "Issue description" * 30
@@ -200,3 +200,37 @@ def test_run_error(mock_config_cls, mock_config):
         run()
 
     assert excinfo.value.code == 1
+
+
+def test_pre_process_label_does_not_exist(mock_github_client, mock_repo):
+    """Test pre_process when the label doesn't exist."""
+    # Setup
+    skip_label = "titled"
+    mock_label = Mock()
+    mock_label.name = "another-label"
+    mock_github_client.get_labels.return_value = [mock_label]
+
+    # Execute
+    pre_process(mock_github_client, mock_repo, skip_label)
+
+    # Verify
+    mock_github_client.get_labels.assert_called_once_with(mock_repo)
+    mock_github_client.create_label.assert_called_once_with(
+        mock_repo, name=skip_label, color="ededed", description="The title was checked by LLM"
+    )
+
+
+def test_pre_process_label_already_exists(mock_github_client, mock_repo):
+    """Test pre_process when the label already exists."""
+    # Setup
+    skip_label = "titled"
+    mock_label = Mock()
+    mock_label.name = skip_label
+    mock_github_client.get_labels.return_value = [mock_label]
+
+    # Execute
+    pre_process(mock_github_client, mock_repo, skip_label)
+
+    # Verify
+    mock_github_client.get_labels.assert_called_once_with(mock_repo)
+    mock_github_client.create_label.assert_not_called()
