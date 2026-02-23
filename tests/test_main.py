@@ -48,6 +48,7 @@ def mock_config():
     config.required_labels = []
     config.apply_to_closed = False
     config.event_data = None
+    config.description_min_skip = 40
     return config
 
 
