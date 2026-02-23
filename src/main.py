@@ -26,6 +26,7 @@ def open_issue_event(config, repo_obj, ai_client, github_client):
             auto_update=config.auto_update,
             strip_characters=config.strip_characters,
             quiet=config.quiet,
+            description_min_skip=config.description_min_skip,
         )
         return [result]
     except Exception as e:
@@ -65,6 +66,7 @@ def scan_issue_event(config, repo_obj, ai_client, github_client):
             auto_update=config.auto_update,
             strip_characters=config.strip_characters,
             quiet=config.quiet,
+            description_min_skip=config.description_min_skip,
         )
         results.append(result)
 
