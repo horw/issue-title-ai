@@ -43,7 +43,7 @@ repos:
     hooks:
       - id: pip-compile
         name: compile requirements.txt
-        entry: bash -c 'pip-compile --output-file=requirements.txt pyproject.toml > /dev/null'
+        entry: bash -c 'pip-compile --no-header --output-file=requirements.txt pyproject.toml > /dev/null'
         language: system
         pass_filenames: false
         files: requirements.txt|pyproject.toml
