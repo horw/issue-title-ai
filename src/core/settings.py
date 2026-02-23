@@ -30,6 +30,8 @@ class Config:
         self.prompt = self._retrieve_prompt()
         self.skip_label = os.environ.get("INPUT_SKIP-LABEL", "titled")
 
+        self.description_min_skip = int(os.getenv("INPUT_DESCRIPTION_LEN_MIN_SKIP", 40))
+
         # Check if this is an issue event trigger
         self.event_name = os.environ.get("GITHUB_EVENT_NAME")
         self.event_path = os.environ.get("GITHUB_EVENT_PATH")

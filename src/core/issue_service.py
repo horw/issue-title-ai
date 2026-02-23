@@ -9,12 +9,14 @@ class IssueProcessor:
         self.skip_label = skip_label
         self.required_labels = required_labels
 
-    def process_issue(self, issue, auto_update=False, strip_characters="", quiet=False):
+    def process_issue(
+        self, issue, auto_update=False, strip_characters="", quiet=False, description_min_skip=40
+    ):
         issue_number = issue.number
         original_title = issue.title
         issue_body = issue.body or ""
 
-        if len(issue_body) < 40:
+        if len(issue_body) < description_min_skip:
             print(f"Issue body too short, skipping: {issue_number}, length: {len(issue_body)}")
             return {
                 "issue_number": issue_number,
